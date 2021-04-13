@@ -4,9 +4,9 @@ import HummingbirdXCT
 import XCTest
 
 final class AppTests: XCTestCase {
-    func testApp() {
+    func testApp() throws {
         let app = HBApplication(testing: .live)
-        app.configure()
+        try app.configure()
 
         app.XCTStart()
         defer { app.XCTStop() }
