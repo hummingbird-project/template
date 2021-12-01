@@ -22,17 +22,7 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: SPM tests
-      run: swift test --enable-code-coverage
-    - name: Convert coverage files
-      run: |
-        xcrun llvm-cov export -format "lcov" \
-          .build/debug/hummingbirdPackageTests.xctest/Contents/MacOs/hummingbirdPackageTests \
-          -ignore-filename-regex="\/Tests\/" \
-          -instr-profile=.build/debug/codecov/default.profdata > info.lcov
-    - name: Upload to codecov.io
-      uses: codecov/codecov-action@v1
-      with:
-        file: info.lcov
+      run: swift test
   linux:
     runs-on: ubuntu-latest
     strategy:
@@ -45,14 +35,4 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Test
-      run: swift test --enable-code-coverage
-    - name: Convert coverage files
-      run: |
-        llvm-cov export -format="lcov" \
-          .build/debug/hummingbirdPackageTests.xctest \
-          -ignore-filename-regex="\/Tests\/" \
-          -instr-profile .build/debug/codecov/default.profdata > info.lcov
-    - name: Upload to codecov.io
-      uses: codecov/codecov-action@v1
-      with:
-        file: info.lcov
+      run: swift test
