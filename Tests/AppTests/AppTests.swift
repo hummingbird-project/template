@@ -4,10 +4,10 @@ import HummingbirdXCT
 import XCTest
 
 final class AppTests: XCTestCase {
-    //struct TestArguments: AppArguments {
-    //}
+    struct TestArguments: AppArguments {}
+
     func testApp() throws {
-        let args = HummingbirdArguments()
+        let args = TestArguments()
         let app = HBApplication(testing: .live)
         try app.configure(args)
 
