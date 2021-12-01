@@ -1,13 +1,13 @@
-import App
+@testable import App
 import Hummingbird
 import HummingbirdXCT
 import XCTest
 
 final class AppTests: XCTestCase {
-    struct TestArguments: AppArguments {
-    }
+    //struct TestArguments: AppArguments {
+    //}
     func testApp() throws {
-        let args = TestArguments()
+        let args = HummingbirdArguments()
         let app = HBApplication(testing: .live)
         try app.configure(args)
 

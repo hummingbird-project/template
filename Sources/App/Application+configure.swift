@@ -9,7 +9,7 @@ extension HBApplication {
     /// add middleware
     /// setup the encoder/decoder
     /// add your routes
-    public func configure(_ args: AppArguments) throws {
+    func configure(_ args: HummingbirdArguments) throws {
         self.router.get("/health") { _ -> HTTPResponseStatus in
             return .ok
         }
