@@ -2,7 +2,7 @@ import App
 import ArgumentParser
 import Hummingbird
 
-struct HummingbirdArguments: ParsableCommand {
+struct HummingbirdArguments: ParsableCommand, AppArguments {
     @Option(name: .shortAndLong)
     var hostname: String = "127.0.0.1"
 
@@ -16,7 +16,7 @@ struct HummingbirdArguments: ParsableCommand {
                 serverName: "Hummingbird"
             )
         )
-        try app.configure()
+        try app.configure(self)
         try app.start()
         app.wait()
     }

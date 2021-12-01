@@ -4,12 +4,15 @@ import HummingbirdXCT
 import XCTest
 
 final class AppTests: XCTestCase {
+    struct TestArguments: AppArguments {
+    }
     func testApp() throws {
+        let args = TestArguments()
         let app = HBApplication(testing: .live)
-        try app.configure()
+        try app.configure(args)
 
         try app.XCTStart()
-        defer { app.XCTStop() }
+        defer { XCTAssertNoThrow(app.XCTStop()) }
 
         app.XCTExecute(uri: "/health", method: .GET) { response in
             XCTAssertEqual(response.status, .ok)
