@@ -1,11 +1,10 @@
 import Hummingbird
 
 /// Application arguments protocol. We use a protocol so we can call
-/// `HBApplication.configure` inside Tests. Any variables added here
-/// also have to be added to 
-public protocol AppArguments {
-// add any arguments you need to pass to `HBApplication.configure`
-}
+/// `HBApplication.configure` inside Tests as well as in the App executable. 
+/// Any variables added here also have to be added to `App` in App.swift and 
+/// `TestArguments` in AppTest.swift
+public protocol AppArguments {}
 
 extension HBApplication {
     /// configure your application
