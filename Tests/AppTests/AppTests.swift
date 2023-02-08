@@ -14,7 +14,7 @@ final class AppTests: XCTestCase {
         try app.XCTStart()
         defer { XCTAssertNoThrow(app.XCTStop()) }
 
-        app.XCTExecute(uri: "/health", method: .GET) { response in
+        try app.XCTExecute(uri: "/health", method: .GET) { response in
             XCTAssertEqual(response.status, .ok)
         }
     }
