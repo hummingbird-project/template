@@ -4,18 +4,18 @@ import HummingbirdXCT
 import XCTest
 
 final class AppTests: XCTestCase {
-    struct TestArguments: AppArguments {}
+    struct TestArguments: AppArguments {
+        let hostname = "127.0.0.1"
+        let port = 0
+    }
 
-    func testApp() throws {
+    func testApp() async throws {
         let args = TestArguments()
-        let app = HBApplication(testing: .live)
-        try app.configure(args)
-
-        try app.XCTStart()
-        defer { XCTAssertNoThrow(app.XCTStop()) }
-
-        try app.XCTExecute(uri: "/health", method: .GET) { response in
-            XCTAssertEqual(response.status, .ok)
+        let app = buildApplication(args)
+        try await app.test(.router) { client in
+            try await client.XCTExecute(uri: "/health", method: .get) { response in
+                XCTAssertEqual(response.status, .ok)
+            }
         }
     }
 }
