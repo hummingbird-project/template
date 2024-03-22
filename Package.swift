@@ -10,7 +10,7 @@ let package = Package(
         .executable(name: "App", targets: ["App"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0-alpha.1"),
+        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0-beta.1"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.3.0")
     ],
     targets: [
@@ -29,7 +29,7 @@ let package = Package(
         .testTarget(name: "AppTests",
             dependencies: [
                 .byName(name: "App"),
-                .product(name: "HummingbirdXCT", package: "hummingbird")
+                .product(name: "HummingbirdTesting", package: "hummingbird")
             ]
         )
     ]

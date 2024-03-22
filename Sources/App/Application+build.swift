@@ -9,12 +9,12 @@ public protocol AppArguments {
     var port: Int { get }
 }
 
-public func buildApplication(_ arguments: some AppArguments) -> some HBApplicationProtocol {
-    let router = HBRouter()
+public func buildApplication(_ arguments: some AppArguments) -> some ApplicationProtocol {
+    let router = Router()
     router.get("/health") { _,_ -> HTTPResponse.Status in
         return .ok
     }
-    let app = HBApplication(
+    let app = Application(
         router: router,
         configuration: .init(
             address: .hostname(arguments.hostname, port: arguments.port),
