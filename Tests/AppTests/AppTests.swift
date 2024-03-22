@@ -1,6 +1,6 @@
 @testable import App
 import Hummingbird
-import HummingbirdXCT
+import HummingbirdTesting
 import XCTest
 
 final class AppTests: XCTestCase {
@@ -13,7 +13,7 @@ final class AppTests: XCTestCase {
         let args = TestArguments()
         let app = buildApplication(args)
         try await app.test(.router) { client in
-            try await client.XCTExecute(uri: "/health", method: .get) { response in
+            try await client.execute(uri: "/health", method: .get) { response in
                 XCTAssertEqual(response.status, .ok)
             }
         }
