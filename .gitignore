@@ -2,6 +2,7 @@
 /.build
 /.swiftpm
 /.vscode
+/.devContainer
 /Packages
 /*.xcodeproj
 xcuserdata/
