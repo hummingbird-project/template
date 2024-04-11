@@ -8,4 +8,4 @@ if [[ -z "$FOLDER" ]]; then
   exit 1
 fi
 
-curl -L https://codeload.github.com/hummingbird-project/template/tar.gz/refs/tags/"$TEMPLATE_VERSION" | tar xvz -s /template-2.0.0-beta.1/"$FOLDER"/
+curl -sSL https://github.com/hummingbird-project/template/archive/refs/tags/"$TEMPLATE_VERSION".tar.gz | tar xvz -s /template-2.0.0-beta.1/"$FOLDER"/

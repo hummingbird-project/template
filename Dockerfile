@@ -1,7 +1,7 @@
 # ================================
 # Build image
 # ================================
-FROM swift:5.9 as build
+FROM swift:5.10 as build
 
 # Install OS updates
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -23,7 +23,7 @@ RUN swift package resolve
 COPY . .
 
 # Build everything, with optimizations and test discovery
-RUN swift build --enable-test-discovery -c release
+RUN swift build -c release
 
 # Switch to the staging area
 WORKDIR /staging
@@ -38,7 +38,7 @@ RUN [ -d /build/public ] && { mv /build/public ./public && chmod -R a-w ./public
 # ================================
 # Run image
 # ================================
-FROM swift:5.9-slim
+FROM swift:5.10-slim
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
