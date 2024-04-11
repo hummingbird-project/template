@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
 PWD=$(pwd)
-BASE_FOLDER=$(basename "$PWD")
+TARGET_FOLDER=${1:-$PWD}
+BASE_FOLDER=$(basename $TARGET_FOLDER)
 CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
-TARGET_FOLDER=${1:-.}
 
 TEMP_FOLDER=$(mktemp -d)
 MO="$TEMP_FOLDER"/mo
@@ -63,7 +63,7 @@ echo "Configuring your Hummingbird project"
 # Download Bash Mustache
 download_mo
 
-if [[ "$TARGET_FOLDER" != "." ]]; then
+if [[ "$TARGET_FOLDER" != "$PWD" ]]; then
     echo "Outputting to $TARGET_FOLDER"
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
