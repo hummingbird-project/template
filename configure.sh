@@ -51,8 +51,18 @@ check_valid() {
 }
 trap cleanup EXIT $?
 
+# Download Bash Mustache
 download_mo
-echo "Outputting to $TARGET_FOLDER"
+
+if [[ "$TARGET_FOLDER" != "." ]]; then
+    echo "Outputting to $TARGET_FOLDER"
+    mkdir -p "$TARGET_FOLDER"/Sources/App
+    mkdir -p "$TARGET_FOLDER"/Tests/AppTests
+else
+    echo "Outputting to current folder"
+fi
+
+
 
 echo -n "Enter your package name: "
 read_input_with_default "$CLEAN_BASE_FOLDER"
@@ -66,11 +76,6 @@ read_input_with_default "App"
 export HB_EXECUTABLE_NAME=$READ_INPUT_RETURN
 if [[ "$HB_EXECUTABLE_NAME" =~ [^a-zA-Z0-9_] ]]; then
     exitWithError "Invalid executable name: $HB_EXECUTABLE_NAME"
-fi
-
-if [[ "$TARGET_FOLDER" != "." ]]; then
-    mkdir -p "$TARGET_FOLDER"/Sources/App
-    mkdir -p "$TARGET_FOLDER"/Tests/AppTests
 fi
 
 # Root level files
