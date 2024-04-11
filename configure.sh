@@ -38,6 +38,13 @@ run_mustache()
     done
 }
 
+run_mustache-template()
+{
+    echo $1 
+    #| $MO > "$TEMP_FOLDER"/$2
+    echo $2
+}
+
 exitWithError()
 {
     echo "Error: $1"
@@ -85,6 +92,8 @@ run_mustache "$FILES"
 FILES=$(find Sources Tests ! -type d)
 run_mustache "$FILES"
 
-
-
-
+# README file
+cat <<EOF | $MO > $TARGET_FOLDER/README.md
+# $HB_PACKAGE_NAME
+My awesome project
+EOF
