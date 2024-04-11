@@ -58,6 +58,8 @@ check_valid() {
 }
 trap cleanup EXIT $?
 
+echo "Configuring your Hummingbird project"
+
 # Download Bash Mustache
 download_mo
 
