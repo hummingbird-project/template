@@ -29,7 +29,7 @@ RUN swift build -c release
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/App" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/{{HB_EXECUTABLE_NAME}}" ./
 
 # Copy any resouces from the public directory and views directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
@@ -60,5 +60,5 @@ USER hummingbird:hummingbird
 EXPOSE 8080
 
 # Start the Vapor service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./App"]
+ENTRYPOINT ["./{{HB_EXECUTABLE_NAME}}"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
