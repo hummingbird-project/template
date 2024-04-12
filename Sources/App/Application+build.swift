@@ -13,7 +13,7 @@ public protocol AppArguments {
 
 public func buildApplication(_ arguments: some AppArguments) -> some ApplicationProtocol {
     let logger = {
-        var logger = Logger(label: "HB")
+        var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
         logger.logLevel = arguments.logLevel ?? .info
         return logger
     }()
@@ -26,7 +26,7 @@ public func buildApplication(_ arguments: some AppArguments) -> some Application
         router: router,
         configuration: .init(
             address: .hostname(arguments.hostname, port: arguments.port),
-            serverName: "Hummingbird"
+            serverName: "{{HB_PACKAGE_NAME}}"
         ),
         logger: logger
     )

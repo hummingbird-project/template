@@ -1,7 +1,7 @@
 # ================================
 # Build image
 # ================================
-FROM swift:5.9 as build
+FROM swift:5.10 as build
 
 # Install OS updates
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
@@ -23,13 +23,13 @@ RUN swift package resolve
 COPY . .
 
 # Build everything, with optimizations and test discovery
-RUN swift build --enable-test-discovery -c release
+RUN swift build -c release
 
 # Switch to the staging area
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path)/App" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path)/{{HB_EXECUTABLE_NAME}}" ./
 
 # Copy any resouces from the public directory and views directory if the directories exist
 # Ensure that by default, neither the directory nor any of its contents are writable.
@@ -38,7 +38,7 @@ RUN [ -d /build/public ] && { mv /build/public ./public && chmod -R a-w ./public
 # ================================
 # Run image
 # ================================
-FROM swift:5.9-slim
+FROM swift:5.10-slim
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
@@ -60,5 +60,5 @@ USER hummingbird:hummingbird
 EXPOSE 8080
 
 # Start the Vapor service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./App"]
+ENTRYPOINT ["./{{HB_EXECUTABLE_NAME}}"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
