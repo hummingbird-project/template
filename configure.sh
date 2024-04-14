@@ -2,7 +2,7 @@
 
 PWD=$(pwd)
 TARGET_FOLDER=${1:-$PWD}
-BASE_FOLDER=$(basename $TARGET_FOLDER)
+BASE_FOLDER=$(basename "$TARGET_FOLDER")
 CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
 
 TEMP_FOLDER=$(mktemp -d)
@@ -36,13 +36,6 @@ run_mustache()
         $MO "$FILE" > "$TEMP_FOLDER"/tempfile
         mv -f "$TEMP_FOLDER"/tempfile "$TARGET_FOLDER/$FILE"
     done
-}
-
-run_mustache-template()
-{
-    echo $1 
-    #| $MO > "$TEMP_FOLDER"/$2
-    echo $2
 }
 
 exitWithError()
@@ -95,7 +88,7 @@ FILES=$(find Sources Tests ! -type d)
 run_mustache "$FILES"
 
 # README file
-cat <<EOF | $MO > $TARGET_FOLDER/README.md
+cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
 # $HB_PACKAGE_NAME
 My awesome project
 EOF
