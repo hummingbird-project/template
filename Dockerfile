@@ -75,12 +75,12 @@ COPY --from=build --chown=hummingbird:hummingbird /staging /app
 # Provide configuration needed by the built-in crash reporter and some sensible default behaviors.
 ENV SWIFT_BACKTRACE=enable=yes,sanitize=yes,threads=all,images=all,interactive=no,swift-backtrace=./swift-backtrace-static
 
-# Ensure all further commands run as the vapor user
+# Ensure all further commands run as the hummingbird user
 USER hummingbird:hummingbird
 
 # Let Docker bind to port 8080
 EXPOSE 8080
 
-# Start the Vapor service when the image is run, default to listening on 8080 in production environment
+# Start the Hummingbird service when the image is run, default to listening on 8080 in production environment
 ENTRYPOINT ["./{{HB_EXECUTABLE_NAME}}"]
 CMD ["--hostname", "0.0.0.0", "--port", "8080"]
