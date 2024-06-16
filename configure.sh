@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 PWD=$(pwd)
-TARGET_FOLDER=${1:-$PWD}
+TEMPLATE_FOLDER=$(dirname $0)
+RELATIVE_TARGET_FOLDER=${1:-}
+TARGET_FOLDER=$(cd "$(dirname "$RELATIVE_TARGET_FOLDER")"; pwd -P)/$(basename "$RELATIVE_TARGET_FOLDER")
 BASE_FOLDER=$(basename "$TARGET_FOLDER")
 CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
 
@@ -60,6 +62,7 @@ if [[ "$TARGET_FOLDER" != "$PWD" ]]; then
     echo "Outputting to $TARGET_FOLDER"
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
+    cp -r $TEMPLATE_FOLDER/.vscode $TARGET_FOLDER/.vscode
 else
     echo "Outputting to current folder"
 fi
@@ -80,6 +83,8 @@ if [[ "$HB_EXECUTABLE_NAME" =~ [^a-zA-Z0-9_] ]]; then
     exitWithError "Invalid executable name: $HB_EXECUTABLE_NAME"
 fi
 
+pushd $TEMPLATE_FOLDER
+
 # Root level files
 FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh")
 run_mustache "$FILES"
@@ -90,5 +95,7 @@ run_mustache "$FILES"
 # README file
 cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
 # $HB_PACKAGE_NAME
-My awesome project
+Hummingbird server framework project
 EOF
+
+popd
