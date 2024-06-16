@@ -1,0 +1,43 @@
+{
+    "Endpoint": {
+        "prefix": "endpoint",
+        "body": [
+            "@Sendable func ${1:functionName}(request: Request, context: some RequestContext) async throws {",
+            "\t${2:statements}",
+            "}"
+        ],
+        "description": "Hummingbird: Endpoint function"
+    },
+    "RouterMiddleware": {
+        "prefix": "middleware",
+        "body": [
+            "struct ${1:Name}Middleware<Context: RequestContext>: RouterMiddleware {",
+            "\tfunc handle(_ request: Request, context: Context, next: (Request, Context) async throws -> Response) async throws -> Response {",
+            "\t\t${2:try await next(request, context)}",
+            "\t}",
+            "}"
+        ],
+        "description": "Hummingbird: RouterMiddleware"
+    },
+    "try context.parameters.require": {
+        "prefix": "parameter",
+        "body": [
+            "try context.parameters.require(\"${2:parameterName}\")"
+        ],
+        "description": "Hummingbird: Extract parameter from request path"
+    },
+    "try await request.decode": {
+        "prefix": "decode",
+        "body": [
+            "try await request.decode(as: ${1:Type}.self, context: context)"
+        ],
+        "description": "Hummingbird: Decode request"
+    },
+    "throw HTTPError": {
+        "prefix": "httperror",
+        "body": [
+            "throw HTTPError(${code})"
+        ],
+        "description": "Hummingbird: Decode request"
+    }
+}  
