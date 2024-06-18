@@ -5,5 +5,5 @@
 /Packages
 /*.xcodeproj
 xcuserdata/
-/.vscode/
+/.vscode/*
 !/.vscode/hummingbird.code-snippets

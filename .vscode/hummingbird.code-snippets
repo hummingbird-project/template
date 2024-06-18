@@ -2,8 +2,8 @@
     "Endpoint": {
         "prefix": "endpoint",
         "body": [
-            "@Sendable func ${1:functionName}(request: Request, context: some RequestContext) async throws {",
-            "\t${2:statements}",
+            "@Sendable func ${1:functionName}(request: Request, context: some RequestContext) async throws -> ${2:returnValue} {",
+            "\t${3:statements}",
             "}"
         ],
         "description": "Hummingbird: Endpoint function"
