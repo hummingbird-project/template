@@ -21,7 +21,9 @@ public func buildApplication(_ arguments: some AppArguments) -> some Application
         return logger
     }()
     let router = Router()
-    // Add health route
+    // Add logging
+    router.add(middleware: LogRequestsMiddleware(.debug))
+    // Add health endpoint
     router.get("/health") { _,_ -> HTTPResponse.Status in
         return .ok
     }

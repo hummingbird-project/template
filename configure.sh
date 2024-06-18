@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-
 PWD=$(pwd)
 TEMPLATE_FOLDER=$(dirname $0)
 RELATIVE_TARGET_FOLDER=${1:-}
@@ -18,7 +17,8 @@ cleanup()
 # Download MO bash mustache renderer
 download_mo() 
 {
-    curl -sSL https://raw.githubusercontent.com/tests-always-included/mo/master/mo -o "$MO"
+    # v3.0.6 of mo is broken
+    curl -sSL https://raw.githubusercontent.com/tests-always-included/mo/3.0.5/mo -o "$MO"
     chmod a+x "$MO"
 }
 
@@ -62,12 +62,11 @@ if [[ "$TARGET_FOLDER" != "$PWD" ]]; then
     echo "Outputting to $TARGET_FOLDER"
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
-    cp -r $TEMPLATE_FOLDER/.vscode $TARGET_FOLDER/.vscode
+    mkdir -p "$TARGET_FOLDER"/.vscode
+    cp -r $TEMPLATE_FOLDER/.vscode/hummingbird.code-snippets $TARGET_FOLDER/.vscode
 else
     echo "Outputting to current folder"
 fi
-
-
 
 echo -n "Enter your package name: "
 read_input_with_default "$CLEAN_BASE_FOLDER"
