@@ -22,7 +22,7 @@ public func buildApplication(_ arguments: some AppArguments) -> some Application
     }()
     let router = Router()
     // Add logging
-    router.add(middleware: LogRequestsMiddleware(.debug))
+    router.add(middleware: LogRequestsMiddleware(.info))
     // Add health endpoint
     router.get("/health") { _,_ -> HTTPResponse.Status in
         return .ok
