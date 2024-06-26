@@ -11,7 +11,7 @@ public protocol AppArguments {
     var logLevel: Logger.Level? { get }
 }
 
-public func buildApplication(_ arguments: some AppArguments) -> some ApplicationProtocol {
+public func buildApplication(_ arguments: some AppArguments) async throws -> some ApplicationProtocol {
     let logger = {
         var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
         logger.logLevel = 

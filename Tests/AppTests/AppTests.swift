@@ -14,7 +14,7 @@ final class AppTests: XCTestCase {
 
     func testApp() async throws {
         let args = TestArguments()
-        let app = buildApplication(args)
+        let app = try await buildApplication(args)
         try await app.test(.router) { client in
             try await client.execute(uri: "/health", method: .get) { response in
                 XCTAssertEqual(response.status, .ok)

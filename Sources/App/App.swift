@@ -14,7 +14,7 @@ struct App: AsyncParsableCommand, AppArguments {
     var logLevel: Logger.Level?
 
     func run() async throws {
-        let app = buildApplication(self)
+        let app = try await buildApplication(self)
         try await app.runService()
     }
 }
