@@ -20,7 +20,7 @@ struct App: AsyncParsableCommand, AppArguments {
 }
 
 /// Extend `Logger.Level` so it can be used as an argument
-#if compiler(>=6.0)
+#if hasFeature(RetroactiveAttribute)
     extension Logger.Level: @retroactive ExpressibleByArgument {}
 #else
     extension Logger.Level: ExpressibleByArgument {}
