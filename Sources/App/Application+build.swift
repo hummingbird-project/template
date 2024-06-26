@@ -12,11 +12,12 @@ public protocol AppArguments {
 }
 
 public func buildApplication(_ arguments: some AppArguments) async throws -> some ApplicationProtocol {
+    let environment = Environment()
     let logger = {
         var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
         logger.logLevel = 
             arguments.logLevel ??
-            Environment.shared.get("LOG_LEVEL").map { Logger.Level(rawValue: $0) ?? .info } ??
+            environment.get("LOG_LEVEL").map { Logger.Level(rawValue: $0) ?? .info } ??
             .info
         return logger
     }()
