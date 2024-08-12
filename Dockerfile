@@ -47,7 +47,7 @@ RUN [ -d /build/public ] && { mv /build/public ./public && chmod -R a-w ./public
 # ================================
 # Run image
 # ================================
-FROM swift:jammy
+FROM ubuntu:jammy
 
 # Make sure all system packages are up to date, and install only essential packages.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
