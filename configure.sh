@@ -31,12 +31,56 @@ read_input_with_default () {
     fi
 }
 
+yn_prompt () {
+    if [[ "$1" == "yes" ]]; then
+        echo "Y/n"
+    else
+        echo "y/N"
+    fi
+}
+
+read_yes_no () {
+    while [[ true ]]; do
+        echo -n "[$(yn_prompt $1)] > "
+        read -r READ_INPUT_RETURN
+
+        case "$READ_INPUT_RETURN" in
+            "y" | "Y")
+                READ_INPUT_RETURN="yes"
+                return
+                ;;
+
+            "n" | "N")
+                READ_INPUT_RETURN="no"
+                return
+                ;;
+
+            "")
+                READ_INPUT_RETURN="$1"
+                return
+                ;;
+
+            *)
+                echo "Please input either \"y\" or \"n\", or press ENTER to use the default."
+                ;;
+        esac
+    done
+}
+
 run_mustache()
 {
     FILES=$1
+    TEMP_FILE="$TEMP_FOLDER"/tempfile
     for FILE in $FILES; do 
-        $MO "$FILE" > "$TEMP_FOLDER"/tempfile
-        mv -f "$TEMP_FOLDER"/tempfile "$TARGET_FOLDER/$FILE"
+        $MO "$FILE" > "$TEMP_FILE"
+        # delete file if it is empty or only contains spaces
+        if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
+            echo "Remove $FILE"
+            rm "$TEMP_FILE"
+        else
+            echo "Copy $FILE"
+            mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
+        fi
     done
 }
 
@@ -63,7 +107,6 @@ if [[ "$TARGET_FOLDER" != "$PWD" ]]; then
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
     mkdir -p "$TARGET_FOLDER"/.vscode
-    cp -r $TEMPLATE_FOLDER/.vscode/hummingbird.code-snippets $TARGET_FOLDER/.vscode
 else
     echo "Outputting to current folder"
 fi
@@ -82,13 +125,19 @@ if [[ "$HB_EXECUTABLE_NAME" =~ [^a-zA-Z0-9_] ]]; then
     exitWithError "Invalid executable name: $HB_EXECUTABLE_NAME"
 fi
 
+echo -n "Include Visual Studio Code snippets: "
+read_yes_no "yes"
+if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
+    export HB_VSCODE_SNIPPETS="yes"
+fi
+
 pushd $TEMPLATE_FOLDER
 
 # Root level files
 FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh")
 run_mustache "$FILES"
 # Files in Sources and Tests folder
-FILES=$(find Sources Tests ! -type d)
+FILES=$(find Sources Tests .vscode/hummingbird.code-snippets ! -type d)
 run_mustache "$FILES"
 
 # README file
