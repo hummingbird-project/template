@@ -11,6 +11,11 @@ public protocol AppArguments {
     var logLevel: Logger.Level? { get }
 }
 
+// Request context used by application
+typealias AppRequestContext = BasicRequestContext
+
+///  Build application
+/// - Parameter arguments: application arguments
 public func buildApplication(_ arguments: some AppArguments) async throws -> some ApplicationProtocol {
     let environment = Environment()
     let logger = {
@@ -21,13 +26,7 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
             .info
         return logger
     }()
-    let router = Router()
-    // Add logging
-    router.add(middleware: LogRequestsMiddleware(.info))
-    // Add health endpoint
-    router.get("/health") { _,_ -> HTTPResponse.Status in
-        return .ok
-    }
+    let router = buildRouter()
     let app = Application(
         router: router,
         configuration: .init(
@@ -37,4 +36,19 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
         logger: logger
     )
     return app
+}
+
+/// Build router
+func buildRouter() -> Router<AppRequestContext> {
+    let router = Router(context: AppRequestContext.self)
+    // Add middleware
+    router.add {
+        // logging middleware
+        LogRequestsMiddleware(.info)
+    }
+    // Add health endpoint
+    router.get("/health") { _,_ -> HTTPResponse.Status in
+        return .ok
+    }
+    return router
 }
