@@ -42,7 +42,7 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
 func buildRouter() -> Router<AppRequestContext> {
     let router = Router(context: AppRequestContext.self)
     // Add middleware
-    router.add {
+    router.addMiddleware {
         // logging middleware
         LogRequestsMiddleware(.info)
     }
