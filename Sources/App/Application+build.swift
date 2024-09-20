@@ -22,7 +22,7 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
         var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
         logger.logLevel = 
             arguments.logLevel ??
-            environment.get("LOG_LEVEL").map { Logger.Level(rawValue: $0) ?? .info } ??
+            environment.get("LOG_LEVEL").flatMap { Logger.Level(rawValue: $0) } ??
             .info
         return logger
     }()
