@@ -72,11 +72,15 @@ run_mustache()
     FILES=$1
     TEMP_FILE="$TEMP_FOLDER"/tempfile
     for FILE in $FILES; do 
-        $MO "$FILE" > "$TARGET_FOLDER/$FILE"
+        $MO "$FILE" > "$TEMP_FILE"
         # delete file if it is empty or only contains spaces
-        if ! grep -q '[^[:space:]]' "$TARGET_FOLDER/$FILE" ; then
+        if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
             echo "Remove $FILE"
+            rm "$TEMP_FILE"
             rm "$TARGET_FOLDER/$FILE"
+        else
+            echo "Copy $FILE"
+            mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
         fi
     done
 }
