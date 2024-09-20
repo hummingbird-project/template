@@ -77,6 +77,7 @@ run_mustache()
         if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
             echo "Remove $FILE"
             rm "$TEMP_FILE"
+            rm "$TARGET_FOLDER/$FILE"
         else
             echo "Copy $FILE"
             mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
