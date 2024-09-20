@@ -46,9 +46,9 @@ func buildRouter() -> Router<AppRequestContext> {
         // logging middleware
         LogRequestsMiddleware(.info)
     }
-    // Add health endpoint
-    router.get("/health") { _,_ -> HTTPResponse.Status in
-        return .ok
+    // Add default endpoint
+    router.get("/") { _,_ in
+        return "Hello!"
     }
     return router
 }
