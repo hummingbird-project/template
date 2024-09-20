@@ -147,3 +147,5 @@ Hummingbird server framework project
 EOF
 
 popd
+
+echo "Enter the folder created and run 'swift run' to build and run your server. Then open 'localhost:8080' on your web browser."
