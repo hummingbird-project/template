@@ -3,7 +3,7 @@ import Hummingbird
 import Logging
 
 @main
-struct App: AsyncParsableCommand, AppArguments {
+struct AppCommand: AsyncParsableCommand, AppArguments {
     @Option(name: .shortAndLong)
     var hostname: String = "127.0.0.1"
 
