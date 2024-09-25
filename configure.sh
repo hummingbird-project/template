@@ -77,6 +77,7 @@ run_mustache()
         if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
             echo "Remove $FILE"
             rm "$TEMP_FILE"
+            rm "$TARGET_FOLDER/$FILE"
         else
             echo "Copy $FILE"
             mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
@@ -147,3 +148,5 @@ Hummingbird server framework project
 EOF
 
 popd
+
+echo "Enter the folder created and run 'swift run' to build and run your server. Then open 'localhost:8080' on your web browser."

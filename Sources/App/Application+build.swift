@@ -22,7 +22,7 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
         var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
         logger.logLevel = 
             arguments.logLevel ??
-            environment.get("LOG_LEVEL").map { Logger.Level(rawValue: $0) ?? .info } ??
+            environment.get("LOG_LEVEL").flatMap { Logger.Level(rawValue: $0) } ??
             .info
         return logger
     }()
@@ -42,13 +42,13 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
 func buildRouter() -> Router<AppRequestContext> {
     let router = Router(context: AppRequestContext.self)
     // Add middleware
-    router.add {
+    router.addMiddleware {
         // logging middleware
         LogRequestsMiddleware(.info)
     }
-    // Add health endpoint
-    router.get("/health") { _,_ -> HTTPResponse.Status in
-        return .ok
+    // Add default endpoint
+    router.get("/") { _,_ in
+        return "Hello!"
     }
     return router
 }
