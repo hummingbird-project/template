@@ -9,6 +9,12 @@ CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
 TEMP_FOLDER=$(mktemp -d)
 MO="$TEMP_FOLDER"/mo
 
+if [ "$TARGET_FOLDER" = "$PWD/" ]; then
+    IN_PLACE_EDIT=true
+else
+    IN_PLACE_EDIT=false
+fi
+
 cleanup()
 {
     rm -rf "$TEMP_FOLDER"
@@ -79,7 +85,7 @@ run_mustache()
             rm "$TEMP_FILE"
             rm "$TARGET_FOLDER/$FILE"
         else
-            if [[ -z "$RELATIVE_TARGET_FOLDER" ]]; then
+            if [ "$IN_PLACE_EDIT" = true ]; then
                 echo "Updating $FILE"
             else
                 echo "Copying $FILE"
@@ -107,7 +113,7 @@ echo "Configuring your Hummingbird project"
 # Download Bash Mustache
 download_mo
 
-if [[ "$TARGET_FOLDER" != "$PWD" ]]; then
+if [ "$IN_PLACE_EDIT" = false ]; then
     echo "Outputting to $TARGET_FOLDER"
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
@@ -157,4 +163,8 @@ EOF
 popd > /dev/null
 
 echo ""
-echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
+if [ "$IN_PLACE_EDIT" = true ]; then
+    echo "Run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
+else
+    echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
+fi
