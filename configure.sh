@@ -75,11 +75,15 @@ run_mustache()
         $MO "$FILE" > "$TEMP_FILE"
         # delete file if it is empty or only contains spaces
         if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
-            echo "Remove $FILE"
+            echo "Removing $FILE"
             rm "$TEMP_FILE"
             rm "$TARGET_FOLDER/$FILE"
         else
-            echo "Copy $FILE"
+            if [[ -z "$RELATIVE_TARGET_FOLDER" ]]; then
+                echo "Updating $FILE"
+            else
+                echo "Copying $FILE"
+            fi    
             mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
         fi
     done
@@ -112,6 +116,7 @@ else
     echo "Outputting to current folder"
 fi
 
+echo ""
 echo -n "Enter your Swift package name: "
 read_input_with_default "$CLEAN_BASE_FOLDER"
 export HB_PACKAGE_NAME=$READ_INPUT_RETURN
@@ -132,6 +137,8 @@ if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
     export HB_VSCODE_SNIPPETS="yes"
 fi
 
+echo ""
+
 pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
@@ -149,4 +156,5 @@ EOF
 
 popd > /dev/null
 
+echo ""
 echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
