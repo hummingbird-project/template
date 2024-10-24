@@ -112,7 +112,7 @@ else
     echo "Outputting to current folder"
 fi
 
-echo -n "Enter your package name: "
+echo -n "Enter your Swift package name: "
 read_input_with_default "$CLEAN_BASE_FOLDER"
 export HB_PACKAGE_NAME=$READ_INPUT_RETURN
 if [[ "$HB_PACKAGE_NAME" =~ [^a-zA-Z0-9_-] ]]; then
@@ -132,7 +132,7 @@ if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
     export HB_VSCODE_SNIPPETS="yes"
 fi
 
-pushd $TEMPLATE_FOLDER
+pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
 FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh")
@@ -147,6 +147,6 @@ cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
 Hummingbird server framework project
 EOF
 
-popd
+popd > /dev/null
 
-echo "Enter the folder created and run 'swift run' to build and run your server. Then open 'localhost:8080' on your web browser."
+echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
