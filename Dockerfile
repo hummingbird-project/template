@@ -25,6 +25,7 @@ COPY . .
 
 # Build everything, with optimizations, with static linking, and using jemalloc
 RUN swift build -c release \
+    --product "{{HB_EXECUTABLE_NAME}}" \
     --static-swift-stdlib \
     -Xlinker -ljemalloc
 
