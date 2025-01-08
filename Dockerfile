@@ -23,8 +23,9 @@ RUN swift package resolve
 # Copy entire repo into container
 COPY . .
 
-# Build everything, with optimizations, with static linking, and using jemalloc
+# Build the application, with optimizations, with static linking, and using jemalloc
 RUN swift build -c release \
+    --product "{{HB_EXECUTABLE_NAME}}" \
     --static-swift-stdlib \
     -Xlinker -ljemalloc
 
