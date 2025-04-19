@@ -1,0 +1,39 @@
+name: Hummingbird Template
+variables:
+  - name: HB_PACKAGE_NAME
+    description: Enter your Swift package name
+    type: string
+  - name: HB_EXECUTABLE_NAME
+    description: Enter your executable name
+    type: string
+  - name: HB_VSCODE_SNIPPETS
+    description: Include Visual Studio Code snippets
+    type: bool
+files:
+  - file: Package.swift
+    dynamic: true
+  - folder: Sources
+    files:
+      - folder: App
+        files:
+          - App.swift
+          - file: Application+build.swift
+            dynamic: true
+  - folder: Tests
+    files:
+      - folder: AppTests
+        files:
+          - file: AppTests.swift
+            dynamic: true
+  - file: TEMPLATE_README.md
+    dynamic_name: README.md
+    dynamic: true
+  - file: Dockerfile
+    dynamic: true
+  - file: .gitignore
+    dynamic: true
+  - .dockerignore
+  - folder: .vscode
+    files:
+      - file: hummingbird.code-snippets
+        dynamic: true
