@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'swift:6.0'
+          - 'swift:latest'
     container:
       image: ${{ matrix.image }}
     steps:
