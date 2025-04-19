@@ -118,6 +118,7 @@ if [ "$IN_PLACE_EDIT" = false ]; then
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
     mkdir -p "$TARGET_FOLDER"/.vscode
+    mkdir -p "$TARGET_FOLDER"/.github/workflows
 else
     echo "Outputting to current folder"
 fi
@@ -151,7 +152,7 @@ pushd $TEMPLATE_FOLDER > /dev/null
 FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh")
 run_mustache "$FILES"
 # Files in Sources and Tests folder
-FILES=$(find Sources Tests .vscode/hummingbird.code-snippets ! -type d)
+FILES=$(find Sources Tests .github .vscode/hummingbird.code-snippets ! -type d)
 run_mustache "$FILES"
 
 # README file
