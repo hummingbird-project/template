@@ -37,3 +37,8 @@ files:
     files:
       - file: hummingbird.code-snippets
         dynamic: true
+  - folder: .github
+    files:
+      - folder: workflows
+        files:
+          - ci.yml
