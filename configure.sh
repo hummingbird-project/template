@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
+##===----------------------------------------------------------------------===##
+##
+## This source file is part of the Hummingbird server framework project
+##
+## Copyright (c) 2021-2025 the Hummingbird authors
+## Licensed under Apache License v2.0
+##
+## See LICENSE.txt for license information
+## See hummingbird/CONTRIBUTORS.txt for the list of Hummingbird authors
+##
+## SPDX-License-Identifier: Apache-2.0
+##
+##===----------------------------------------------------------------------===##
 PWD=$(pwd)
 TEMPLATE_FOLDER=$(dirname $0)
 RELATIVE_TARGET_FOLDER=${1:-}
@@ -118,6 +131,7 @@ if [ "$IN_PLACE_EDIT" = false ]; then
     mkdir -p "$TARGET_FOLDER"/Sources/App
     mkdir -p "$TARGET_FOLDER"/Tests/AppTests
     mkdir -p "$TARGET_FOLDER"/.vscode
+    mkdir -p "$TARGET_FOLDER"/.github/workflows
 else
     echo "Outputting to current folder"
 fi
@@ -148,10 +162,10 @@ echo ""
 pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
-FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh")
+FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE)
 run_mustache "$FILES"
 # Files in Sources and Tests folder
-FILES=$(find Sources Tests .vscode/hummingbird.code-snippets ! -type d)
+FILES=$(find Sources Tests .github .vscode/hummingbird.code-snippets ! -type d)
 run_mustache "$FILES"
 
 # README file
