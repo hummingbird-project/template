@@ -36,6 +36,7 @@ files:
   - folder: .vscode
     files:
       - file: hummingbird.code-snippets
+        if: HB_VSCODE_SNIPPETS
         dynamic: true
   - folder: .github
     files:
