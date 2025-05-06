@@ -16,7 +16,9 @@ curl -L https://raw.githubusercontent.com/hummingbird-project/template/main/scri
 
 Then enter the folder created, run `./configure.sh` and follow the instructions.
 
-## Alternative method
+## Alternative methods
+
+### Git
 
 Clone this repository locally
 
@@ -28,4 +30,18 @@ And then call the configure script with a path argument. This will create a new 
 
 ```bash
 ./configure.sh <path to new project>
+```
+
+### Vapor Toolbox
+
+Download the [Vapor Toolbox](https://github.com/vapor/toolbox) on macOS and Linux using Homebrew
+
+```bash
+brew install vapor
+```
+
+Create a new project passing the URL of this Git repository
+
+```bash
+vapor new <ProjectName> --template https://github.com/hummingbird-project/template
 ```
