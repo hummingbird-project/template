@@ -162,7 +162,7 @@ echo ""
 pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
-FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE ! -name TEMPLATE_README.md)
+FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE ! -name TEMPLATE_README.md ! -name manifest.yml)
 run_mustache "$FILES"
 # Files in Sources and Tests folder
 FILES=$(find Sources Tests .github .vscode/hummingbird.code-snippets ! -type d)
