@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-FOLDER=${1:-}
 TEMPLATE_VERSION=2.0.4
+TEMP_DIR=$(mktemp -d)
 
-if [[ -z "$FOLDER" ]]; then
-  echo "Missing folder name"
-  echo "Usage: download.sh <folder>"
-  exit 1
-fi
+trap cleanup EXIT $?
 
-curl -sSL https://github.com/hummingbird-project/template/archive/refs/tags/"$TEMPLATE_VERSION".tar.gz | tar xvz -s /template-"$TEMPLATE_VERSION"/"$FOLDER"/
+cleanup()
+{
+    if [ -n "$TEMP_DIR" ]; then
+        rm -rf $TEMP_DIR
+    fi
+}
+
+# Run curl and extract to temp folder
+curl -sSL https://github.com/hummingbird-project/template/archive/refs/tags/"$TEMPLATE_VERSION".tar.gz | tar xvz -C $TEMP_DIR
+# Run configure.sh
+"$TEMP_DIR"/template-"$TEMPLATE_VERSION"/configure.sh

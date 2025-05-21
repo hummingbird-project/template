@@ -12,21 +12,8 @@
 ## SPDX-License-Identifier: Apache-2.0
 ##
 ##===----------------------------------------------------------------------===##
-PWD=$(pwd)
+
 TEMPLATE_FOLDER=$(dirname $0)
-RELATIVE_TARGET_FOLDER=${1:-}
-TARGET_FOLDER=$(cd "$(dirname "$RELATIVE_TARGET_FOLDER")"; pwd -P)/$(basename "$RELATIVE_TARGET_FOLDER")
-BASE_FOLDER=$(basename "$TARGET_FOLDER")
-CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
-
-TEMP_FOLDER=$(mktemp -d)
-MO="$TEMP_FOLDER"/mo
-
-if [ "$TARGET_FOLDER" = "$PWD/" ]; then
-    IN_PLACE_EDIT=true
-else
-    IN_PLACE_EDIT=false
-fi
 
 cleanup()
 {
@@ -89,6 +76,7 @@ read_yes_no () {
 run_mustache()
 {
     FILES=$1
+    TARGET_FOLDER=$2
     TEMP_FILE="$TEMP_FOLDER"/tempfile
     for FILE in $FILES; do 
         $MO "$FILE" > "$TEMP_FILE"
@@ -98,11 +86,7 @@ run_mustache()
             rm "$TEMP_FILE"
             rm "$TARGET_FOLDER/$FILE"
         else
-            if [ "$IN_PLACE_EDIT" = true ]; then
-                echo "Updating $FILE"
-            else
-                echo "Copying $FILE"
-            fi    
+            echo "Copying $FILE"
             mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
         fi
     done
@@ -121,20 +105,41 @@ check_valid() {
 }
 trap cleanup EXIT $?
 
-echo "Configuring your Hummingbird project"
-
 # Download Bash Mustache
+TEMP_FOLDER=$(mktemp -d)
+MO="$TEMP_FOLDER"/mo
 download_mo
 
-if [ "$IN_PLACE_EDIT" = false ]; then
-    echo "Outputting to $TARGET_FOLDER"
-    mkdir -p "$TARGET_FOLDER"/Sources/App
-    mkdir -p "$TARGET_FOLDER"/Tests/AppTests
-    mkdir -p "$TARGET_FOLDER"/.vscode
-    mkdir -p "$TARGET_FOLDER"/.github/workflows
-else
-    echo "Outputting to current folder"
+echo "Configuring your Hummingbird project"
+
+RELATIVE_TARGET_FOLDER=${1:-}
+
+# if no target folder is supplied ask for one
+if [[ -z "$RELATIVE_TARGET_FOLDER" ]]; then
+  echo ""
+  echo -n "Enter your folder name: "
+  read_input_with_default "my-app"
+  export RELATIVE_TARGET_FOLDER=$READ_INPUT_RETURN
 fi
+
+# verify parent folder exists
+PARENT_FOLDER=$(dirname "$RELATIVE_TARGET_FOLDER")
+if [ ! -d "$PARENT_FOLDER" ]; then
+    echo "$PARENT_FOLDER does not exist"
+    exit -1
+fi
+
+TARGET_FOLDER=$(cd "$(dirname "$RELATIVE_TARGET_FOLDER")"; pwd -P)/$(basename "$RELATIVE_TARGET_FOLDER")
+
+echo "Outputting to $TARGET_FOLDER"
+mkdir -p "$TARGET_FOLDER"/Sources/App
+mkdir -p "$TARGET_FOLDER"/Tests/AppTests
+mkdir -p "$TARGET_FOLDER"/.vscode
+mkdir -p "$TARGET_FOLDER"/.github/workflows
+
+# get base folder of target folder so we can use that as default app name
+BASE_FOLDER=$(basename "$TARGET_FOLDER")
+CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
 
 echo ""
 echo -n "Enter your Swift package name: "
@@ -163,10 +168,10 @@ pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
 FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE)
-run_mustache "$FILES"
+run_mustache "$FILES" "$TARGET_FOLDER"
 # Files in Sources and Tests folder
 FILES=$(find Sources Tests .github .vscode/hummingbird.code-snippets ! -type d)
-run_mustache "$FILES"
+run_mustache "$FILES" "$TARGET_FOLDER"
 
 # README file
 cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
@@ -177,8 +182,4 @@ EOF
 popd > /dev/null
 
 echo ""
-if [ "$IN_PLACE_EDIT" = true ]; then
-    echo "Run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
-else
-    echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
-fi
+echo "Enter the folder $TARGET_FOLDER and run 'swift run' to build and run your server. Then open 'http://localhost:8080' in your web browser."
