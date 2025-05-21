@@ -96,7 +96,9 @@ run_mustache()
         if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
             echo "Removing $FILE"
             rm "$TEMP_FILE"
-            rm "$TARGET_FOLDER/$FILE"
+            if [ "$IN_PLACE_EDIT" = true ]; then
+                rm "$TARGET_FOLDER/$FILE"
+            fi
         else
             if [ "$IN_PLACE_EDIT" = true ]; then
                 echo "Updating $FILE"
@@ -151,8 +153,15 @@ if [[ "$HB_EXECUTABLE_NAME" =~ [^a-zA-Z0-9_] ]]; then
     exitWithError "Invalid executable name: $HB_EXECUTABLE_NAME"
 fi
 
+echo -n "Do you want to use the OpenAPI generator: "
+read_yes_no "no"
+if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
+    export HB_OPENAPI="yes"
+    mkdir -p "$TARGET_FOLDER"/Sources/AppAPI
+fi
+
 echo -n "Include Visual Studio Code snippets: "
-read_yes_no "yes"
+read_yes_no "no"
 if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
     export HB_VSCODE_SNIPPETS="yes"
 fi
