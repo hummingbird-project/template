@@ -30,7 +30,7 @@ download_mo()
 
 read_input_with_default () {
     echo -n "[$1] > "
-    read -r READ_INPUT_RETURN
+    read -r READ_INPUT_RETURN </dev/tty
 
     if [ -z "$READ_INPUT_RETURN" ]; then
         READ_INPUT_RETURN="$1"
@@ -48,7 +48,7 @@ yn_prompt () {
 read_yes_no () {
     while [[ true ]]; do
         echo -n "[$(yn_prompt $1)] > "
-        read -r READ_INPUT_RETURN
+        read -r READ_INPUT_RETURN </dev/tty
 
         case "$READ_INPUT_RETURN" in
             "y" | "Y")
