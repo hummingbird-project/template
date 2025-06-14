@@ -139,7 +139,7 @@ mkdir -p "$TARGET_FOLDER"/.github/workflows
 
 # get base folder of target folder so we can use that as default app name
 BASE_FOLDER=$(basename "$TARGET_FOLDER")
-CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_]/_/g')
+CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_\-]/_/g')
 
 echo ""
 echo -n "Enter your Swift package name: "
