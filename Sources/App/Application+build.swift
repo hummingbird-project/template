@@ -1,5 +1,8 @@
 import Hummingbird
 import Logging
+{{#HB_OPENAPI}}
+import OpenAPIHummingbird
+{{/HB_OPENAPI}}
 
 /// Application arguments protocol. We use a protocol so we can call
 /// `buildApplication` inside Tests as well as in the App executable. 
@@ -26,7 +29,7 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
             .info
         return logger
     }()
-    let router = buildRouter()
+    let router = try buildRouter()
     let app = Application(
         router: router,
         configuration: .init(
@@ -39,16 +42,27 @@ public func buildApplication(_ arguments: some AppArguments) async throws -> som
 }
 
 /// Build router
-func buildRouter() -> Router<AppRequestContext> {
+func buildRouter() throws -> Router<AppRequestContext> {
     let router = Router(context: AppRequestContext.self)
     // Add middleware
     router.addMiddleware {
         // logging middleware
         LogRequestsMiddleware(.info)
+{{#HB_OPENAPI}}
+        // store request context in TaskLocal
+        OpenAPIRequestContextMiddleware()
+{{/HB_OPENAPI}}
     }
+{{#HB_OPENAPI}}
+    // Add OpenAPI handlers
+    let api = APIImplementation()
+    try api.registerHandlers(on: router)
+{{/HB_OPENAPI}}
+{{^HB_OPENAPI}}
     // Add default endpoint
     router.get("/") { _,_ in
         return "Hello!"
     }
+{{/HB_OPENAPI}}
     return router
 }

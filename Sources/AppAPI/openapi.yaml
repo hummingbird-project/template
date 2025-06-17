@@ -1,0 +1,20 @@
+{{#HB_OPENAPI}}
+openapi: '3.1.0'
+info:
+  title: AppService
+  version: 1.0.0
+servers:
+  - url: https://example.com/api
+    description: App service deployment.
+paths:
+  /:
+    get:
+      operationId: getHello
+      responses:
+        '200':
+          description: Hello!
+          content:
+            text/plain:
+              schema:
+                type: string
+{{/HB_OPENAPI}}
