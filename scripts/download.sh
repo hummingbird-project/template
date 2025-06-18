@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-TEMPLATE_VERSION=2.0.4
+TEMPLATE_VERSION=2.1.0
 TEMP_DIR=$(mktemp -d)
 
 trap cleanup EXIT $?
