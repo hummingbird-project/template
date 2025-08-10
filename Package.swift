@@ -38,7 +38,7 @@ let package = Package(
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime")
             ],
             path: "Sources/AppAPI",
-            plugins: [.plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")],
+            plugins: [.plugin(name: "OpenAPIGenerator", package: "swift-openapi-generator")]
         ),
 {{/HB_OPENAPI}}
         .testTarget(name: "{{HB_EXECUTABLE_NAME}}Tests",
