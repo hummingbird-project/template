@@ -46,8 +46,13 @@ func buildRouter() throws -> Router<AppRequestContext> {
     let router = Router(context: AppRequestContext.self)
     // Add middleware
     router.addMiddleware {
-        // logging middleware
+        // Logging middleware
         LogRequestsMiddleware(.info)
+
+        // Error middleware, transforms internal errors into
+        // HTTP 500 responses
+        ErrorMiddleware()
+
 {{#HB_OPENAPI}}
         // store request context in TaskLocal
         OpenAPIRequestContextMiddleware()
