@@ -22,8 +22,8 @@ package protocol AppArguments {
 }
 {{/hbLambda}}
 
-// Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<APIGatewayV2Request>{{/hbLambda}}
-typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<APIGatewayV2Request>{{/hbLambda}}
+// Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<{{hbLambdaType}}Request>{{/hbLambda}}
+typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<{{hbLambdaType}}Request>{{/hbLambda}}
 
 {{^hbLambda}}
 ///  Build application
@@ -32,7 +32,7 @@ func buildApplication(_ arguments: some AppArguments) async throws -> some Appli
 {{/hbLambda}}
 {{#hbLambda}}
 ///  Build AWS Lambda function
-func buildLambda() async throws -> APIGatewayV2LambdaFunction<RouterResponder<AppRequestContext>> {
+func buildLambda() async throws -> {{hbLambdaType}}LambdaFunction<RouterResponder<AppRequestContext>> {
 {{/hbLambda}}
     let environment = Environment()
     let logger = {
@@ -58,7 +58,7 @@ func buildLambda() async throws -> APIGatewayV2LambdaFunction<RouterResponder<Ap
     return app
 {{/hbLambda}}
 {{#hbLambda}}
-    let lambda = APIGatewayV2LambdaFunction(
+    let lambda = {{hbLambdaType}}LambdaFunction(
         router: router,
         logger: logger
     )

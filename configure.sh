@@ -155,6 +155,7 @@ echo -n "Do you want to build an AWS Lambda function? "
 read_yes_no "no"
 if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
     export hbLambda="yes"
+    export hbLambdaType="APIGatewayV2"
     export hbExecutableName="App"
 else
     echo -n "Enter your executable name: "
