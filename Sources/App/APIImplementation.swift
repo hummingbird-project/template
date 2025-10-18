@@ -1,4 +1,4 @@
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
 import AppAPI
 import OpenAPIRuntime
 
@@ -7,4 +7,4 @@ struct APIImplementation: APIProtocol {
         return .ok(.init(body: .plainText("Hello!")))
     }
 }
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}

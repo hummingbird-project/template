@@ -1,7 +1,7 @@
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
 generate:
   - types
   - server
 accessModifier: package
 namingStrategy: idiomatic
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}

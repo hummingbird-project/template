@@ -101,8 +101,8 @@ exitWithError()
 }
 
 check_valid() {
-    if [[ "$HB_PACKAGE_NAME" =~ [^a-zA-Z0-9_] ]]; then
-        exitWithError "Invalid package name: $HB_PACKAGE_NAME"
+    if [[ "$hbPackageName" =~ [^a-zA-Z0-9_] ]]; then
+        exitWithError "Invalid package name: $hbPackageName"
     fi
 }
 trap cleanup EXIT $?
@@ -146,29 +146,36 @@ CLEAN_BASE_FOLDER=$(echo "$BASE_FOLDER" | sed -e 's/[^a-zA-Z0-9_\-]/_/g')
 echo ""
 echo -n "Enter your Swift package name: "
 read_input_with_default "$CLEAN_BASE_FOLDER"
-export HB_PACKAGE_NAME=$READ_INPUT_RETURN
-if [[ "$HB_PACKAGE_NAME" =~ [^a-zA-Z0-9_-] ]]; then
-    exitWithError "Invalid package name: $HB_PACKAGE_NAME"
+export hbPackageName=$READ_INPUT_RETURN
+if [[ "$hbPackageName" =~ [^a-zA-Z0-9_-] ]]; then
+    exitWithError "Invalid package name: $hbPackageName"
 fi
 
-echo -n "Enter your executable name: "
-read_input_with_default "App"
-export HB_EXECUTABLE_NAME=$READ_INPUT_RETURN
-if [[ "$HB_EXECUTABLE_NAME" =~ [^a-zA-Z0-9_] ]]; then
-    exitWithError "Invalid executable name: $HB_EXECUTABLE_NAME"
-fi
-
-echo -n "Do you want to use the OpenAPI generator: "
+echo -n "Do you want to build an AWS Lambda function? "
 read_yes_no "no"
 if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
-    export HB_OPENAPI="yes"
+    export hbLambda="yes"
+    export hbExecutableName="App"
+else
+    echo -n "Enter your executable name: "
+    read_input_with_default "App"
+    export hbExecutableName=$READ_INPUT_RETURN
+    if [[ "$hbExecutableName" =~ [^a-zA-Z0-9_] ]]; then
+        exitWithError "Invalid executable name: $hbExecutableName"
+    fi
+fi
+
+echo -n "Do you want to use the OpenAPI generator? "
+read_yes_no "no"
+if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
+    export hbOpenAPI="yes"
     mkdir -p "$TARGET_FOLDER"/Sources/AppAPI
 fi
 
 echo -n "Include Visual Studio Code snippets: "
 read_yes_no "no"
 if [[ "$READ_INPUT_RETURN" == "yes" ]]; then
-    export HB_VSCODE_SNIPPETS="yes"
+    export hbVSCodeSnippets="yes"
 fi
 
 echo ""
@@ -184,7 +191,7 @@ run_mustache "$FILES" "$TARGET_FOLDER"
 
 # README file
 cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
-# $HB_PACKAGE_NAME
+# $hbPackageName
 Hummingbird server framework project
 EOF
 

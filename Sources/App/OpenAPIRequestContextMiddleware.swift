@@ -1,4 +1,4 @@
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
 import Hummingbird
 
 extension AppRequestContext {
@@ -18,4 +18,4 @@ struct OpenAPIRequestContextMiddleware: RouterMiddleware {
         }
     }
 }
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}

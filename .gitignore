@@ -6,8 +6,8 @@
 /*.xcodeproj
 xcuserdata/
 /.vscode/*
-{{#HB_VSCODE_SNIPPETS}}
+{{#hbVSCodeSnippets}}
 !/.vscode/hummingbird.code-snippets
-{{/HB_VSCODE_SNIPPETS}}
+{{/hbVSCodeSnippets}}
 .env.*
 .env
