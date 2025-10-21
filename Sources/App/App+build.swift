@@ -1,44 +1,69 @@
+{{#hbLambda}}
+import AWSLambdaEvents
+{{/hbLambda}}
 import Hummingbird
+{{#hbLambda}}
+import HummingbirdLambda
+{{/hbLambda}}
 import Logging
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
 import OpenAPIHummingbird
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}
 
+{{^hbLambda}}
 /// Application arguments protocol. We use a protocol so we can call
 /// `buildApplication` inside Tests as well as in the App executable. 
 /// Any variables added here also have to be added to `App` in App.swift and 
 /// `TestArguments` in AppTest.swift
-public protocol AppArguments {
+package protocol AppArguments {
     var hostname: String { get }
     var port: Int { get }
     var logLevel: Logger.Level? { get }
 }
+{{/hbLambda}}
 
-// Request context used by application
-typealias AppRequestContext = BasicRequestContext
+// Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<{{hbLambdaType}}Request>{{/hbLambda}}
+typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<{{hbLambdaType}}Request>{{/hbLambda}}
 
+{{^hbLambda}}
 ///  Build application
 /// - Parameter arguments: application arguments
-public func buildApplication(_ arguments: some AppArguments) async throws -> some ApplicationProtocol {
+func buildApplication(_ arguments: some AppArguments) async throws -> some ApplicationProtocol {
+{{/hbLambda}}
+{{#hbLambda}}
+///  Build AWS Lambda function
+func buildLambda() async throws -> {{hbLambdaType}}LambdaFunction<RouterResponder<AppRequestContext>> {
+{{/hbLambda}}
     let environment = Environment()
     let logger = {
-        var logger = Logger(label: "{{HB_PACKAGE_NAME}}")
+        var logger = Logger(label: "{{hbPackageName}}")
         logger.logLevel = 
+{{^hbLambda}}
             arguments.logLevel ??
+{{/hbLambda}}
             environment.get("LOG_LEVEL").flatMap { Logger.Level(rawValue: $0) } ??
             .info
         return logger
     }()
     let router = try buildRouter()
+{{^hbLambda}}
     let app = Application(
         router: router,
         configuration: .init(
             address: .hostname(arguments.hostname, port: arguments.port),
-            serverName: "{{HB_PACKAGE_NAME}}"
+            serverName: "{{hbPackageName}}"
         ),
         logger: logger
     )
     return app
+{{/hbLambda}}
+{{#hbLambda}}
+    let lambda = {{hbLambdaType}}LambdaFunction(
+        router: router,
+        logger: logger
+    )
+    return lambda
+{{/hbLambda}}
 }
 
 /// Build router
@@ -48,21 +73,21 @@ func buildRouter() throws -> Router<AppRequestContext> {
     router.addMiddleware {
         // logging middleware
         LogRequestsMiddleware(.info)
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
         // store request context in TaskLocal
         OpenAPIRequestContextMiddleware()
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}
     }
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
     // Add OpenAPI handlers
     let api = APIImplementation()
     try api.registerHandlers(on: router)
-{{/HB_OPENAPI}}
-{{^HB_OPENAPI}}
+{{/hbOpenAPI}}
+{{^hbOpenAPI}}
     // Add default endpoint
     router.get("/") { _,_ in
         return "Hello!"
     }
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}
     return router
 }

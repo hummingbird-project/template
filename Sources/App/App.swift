@@ -2,6 +2,7 @@ import ArgumentParser
 import Hummingbird
 import Logging
 
+{{^hbLambda}}
 @main
 struct AppCommand: AsyncParsableCommand, AppArguments {
     @Option(name: .shortAndLong)
@@ -25,3 +26,13 @@ struct AppCommand: AsyncParsableCommand, AppArguments {
 #else
     extension Logger.Level: ExpressibleByArgument {}
 #endif
+{{/hbLambda}}
+{{#hbLambda}}
+@main
+struct Lambda {
+    static func main() async throws {
+        let lambda = try await buildLambda()
+        try await lambda.runService()
+    }
+}
+{{^hbLambda}}

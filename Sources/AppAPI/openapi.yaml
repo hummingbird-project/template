@@ -1,4 +1,4 @@
-{{#HB_OPENAPI}}
+{{#hbOpenAPI}}
 openapi: '3.1.0'
 info:
   title: AppService
@@ -17,4 +17,4 @@ paths:
             text/plain:
               schema:
                 type: string
-{{/HB_OPENAPI}}
+{{/hbOpenAPI}}
