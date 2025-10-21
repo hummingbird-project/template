@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-TEMPLATE_VERSION=2.1.0
+TEMPLATE_VERSION=$(git ls-remote --tags --refs https://github.com/hummingbird-project/template | sed -E 's/.*refs\/tags\/(.*)/\1/' | sort --version-sort | tail -n 1)
 TEMP_DIR=$(mktemp -d)
 
 trap cleanup EXIT $?
