@@ -22,9 +22,17 @@ struct AppCommand: AsyncParsableCommand, AppArguments {
 
 /// Extend `Logger.Level` so it can be used as an argument
 #if hasFeature(RetroactiveAttribute)
-    extension Logger.Level: @retroactive ExpressibleByArgument {}
+    extension Logger.Level: @retroactive ExpressibleByArgument {
+        public init?(argument: String) {
+            self.init(rawValue: argument)
+        }
+    }
 #else
-    extension Logger.Level: ExpressibleByArgument {}
+    extension Logger.Level: ExpressibleByArgument {
+        public init?(argument: String) {
+            self.init(rawValue: argument)
+        }
+    }
 #endif
 {{/hbLambda}}
 {{#hbLambda}}

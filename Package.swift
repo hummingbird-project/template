@@ -16,6 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.8.0"),
 {{#hbLambda}}
         .package(url: "https://github.com/hummingbird-project/hummingbird-lambda.git", from: "2.0.0"),
 {{/hbLambda}}
@@ -29,6 +30,7 @@ let package = Package(
     targets: [
         .executableTarget(name: "{{hbExecutableName}}",
             dependencies: [
+                .product(name: "Logging", package: "swift-log"),
                 .product(name: "ArgumentParser", package: "swift-argument-parser"),
                 .product(name: "Hummingbird", package: "hummingbird"),
 {{#hbLambda}}
