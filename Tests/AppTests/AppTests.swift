@@ -14,8 +14,8 @@ import Testing
 {{^hbLambda}}
 private let reader = ConfigReader(providers: [
     InMemoryProvider(values: [
-        "host": "127.0.0.1",
-        "port": "0",
+        "http.host": "127.0.0.1",
+        "http.port": "0",
         "log.level": "trace"
     ])
 ])
