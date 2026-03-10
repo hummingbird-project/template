@@ -78,18 +78,20 @@ run_mustache()
     FILES=$1
     TARGET_FOLDER=$2
     TEMP_FILE="$TEMP_FOLDER"/tempfile
-    for FILE in $FILES; do 
+    for FILE in $FILES; do
+        # Strip .mustache extension from output filename
+        OUTPUT_FILE="${FILE%.mustache}"
         $MO "$FILE" > "$TEMP_FILE"
         # delete file if it is empty or only contains spaces
         if ! grep -q '[^[:space:]]' "$TEMP_FILE" ; then
-            echo "Removing $FILE"
+            echo "Removing $OUTPUT_FILE"
             rm "$TEMP_FILE"
             if [ "$IN_PLACE_EDIT" = true ]; then
-                rm "$TARGET_FOLDER/$FILE"
+                rm "$TARGET_FOLDER/$OUTPUT_FILE"
             fi
         else
-            echo "Copying $FILE"
-            mv -f "$TEMP_FILE" "$TARGET_FOLDER/$FILE"
+            echo "Copying $OUTPUT_FILE"
+            mv -f "$TEMP_FILE" "$TARGET_FOLDER/$OUTPUT_FILE"
         fi
     done
 }
