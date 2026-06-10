@@ -1,0 +1,48 @@
+{
+  "questions": {
+    "start": {
+      "question": "What kind of application are you building",
+      "branch": {
+        "options": [
+          {"name": "Server","next": "AppName"},
+          {"name": "Lambda","next": "LambdaType","variable": "hbLambda"}
+        ]
+      }
+    },
+    "AppName": {
+      "question": "What would you like your executable to be named?",
+      "text": {
+        "prompt": "App Name: ",
+        "validationRules": [
+          "nonEmpty",
+          "noWhitespace",
+          "allASCII"
+        ],
+        "variable": "hbExecutableName",
+        "next": "Features"
+      }
+    },
+    "LambdaType": {
+      "question": "What kind of lambda are you building",
+      "select": {
+        "options": [
+          {"name": "APIGateway"},
+          {"name": "APIGatewayV2"},
+          {"name": "FunctionURL"}
+        ],
+        "variable": "hbLambdaType",
+        "next": "Features"
+      }
+    },
+    "Features": {
+      "question": "Which features would you like to enable?",
+      "multi-select": {
+        "options": [
+          {"name": "OpenAPI", "variable": "hbOpenAPI"},
+          {"name": "Visual Studio Code Snippets", "variable": "hbVSCodeSnippets"}
+        ]
+      }
+    }
+  },
+  "version": 1
+}
