@@ -5,7 +5,7 @@
       "branch": {
         "options": [
           {"name": "Server","next": "AppName"},
-          {"name": "Lambda","next": "LambdaType","variable": "hbLambda"}
+          {"name": "Lambda","next": "LambdaType","contextKey": "hbLambda"}
         ]
       }
     },
@@ -18,7 +18,7 @@
           "noWhitespace",
           "allASCII"
         ],
-        "variable": "hbExecutableName",
+        "contextKey": "hbExecutableName",
         "next": "Features"
       }
     },
@@ -30,7 +30,7 @@
           {"name": "APIGatewayV2"},
           {"name": "FunctionURL"}
         ],
-        "variable": "hbLambdaType",
+        "contextKey": "hbLambdaType",
         "next": "Features"
       }
     },
@@ -38,8 +38,8 @@
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "variable": "hbOpenAPI"},
-          {"name": "Visual Studio Code Snippets", "variable": "hbVSCodeSnippets"}
+          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
+          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
         ]
       }
     }
