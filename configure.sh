@@ -300,17 +300,11 @@ echo ""
 pushd $TEMPLATE_FOLDER > /dev/null
 
 # Root level files
-FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE ! -name ".DS_Store")
+FILES=$(find . -maxdepth 1 ! -type d ! -name "*.sh" ! -name LICENSE ! -name README.md ! -name ".DS_Store")
 run_mustache "$FILES" "$TARGET_FOLDER"
 # Files in Sources and Tests folder
 FILES=$(find Sources Tests .github .vscode/hummingbird.code-snippets ! -type d ! -name "test-configure.yml")
 run_mustache "$FILES" "$TARGET_FOLDER"
-
-# README file
-cat <<EOF | $MO > "$TARGET_FOLDER"/README.md
-# $hbPackageName
-Hummingbird server framework project
-EOF
 
 popd > /dev/null
 
