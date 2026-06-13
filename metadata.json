@@ -44,5 +44,15 @@
       }
     }
   },
-  "version": 1
+  "ignore": [
+    ".github/workflows/test-configure.yml",
+    ".vscode/settings.json",
+    "configure.sh",
+    "scripts/download.sh",
+    "scripts/test_configure.sh",
+    "README.md",
+    "LICENSE",
+    "metadata.json"
+  ],
+  "version": 2
 }
