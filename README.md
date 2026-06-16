@@ -7,24 +7,16 @@
 
 # Hummingbird Template
 
-Template for Hummingbird App
+Template for Hummingbird App used by `hb` application.
 
-Run the download script and follow the instructions. 
+Download `hb` using Homebrew
 
 ```bash
-curl -L https://raw.githubusercontent.com/hummingbird-project/template/main/scripts/download.sh | bash
+brew install hummingbird-project/tap/hb
 ```
 
-## Alternative method
-
-Clone this repository locally
+Run to generate project from this template
 
 ```bash
-git clone https://github.com/hummingbird-project/template
-```
-
-And then call the configure script with a path argument. This will create a new project at the specified path
-
-```bash
-./configure.sh <path to new project>
+hb init <target-folder>
 ```
