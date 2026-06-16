@@ -62,7 +62,10 @@ let package = Package(
             dependencies: [
                 .byName(name: "{{hbExecutableName}}"),
 {{^hbLambda}}
-                .product(name: "HummingbirdTesting", package: "hummingbird")
+                .product(name: "HummingbirdTesting", package: "hummingbird"),
+{{#hbWebSocket}}
+                .product(name: "HummingbirdWSTesting", package: "hummingbird-websocket"),
+{{/hbWebSocket}}
 {{/hbLambda}}
 {{#hbLambda}}
                 .product(name: "HummingbirdLambdaTesting", package: "hummingbird-lambda"),

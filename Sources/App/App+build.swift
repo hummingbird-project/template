@@ -101,9 +101,9 @@ func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
         for try await message in inbound.messages(maxSize: 1_000_000) {
             switch message {
             case .binary(let buffer):
-                try await outbound.write(.text("Received binary message, length \(buffer.readableBytes)"))
+                try await outbound.write(.text("Binary message, length: \(buffer.readableBytes)"))
             case .text(let string):
-                try await outbound.write(.text("Received text message, length \(string.count)"))
+                try await outbound.write(.text("Text message, length: \(string.count)"))
             }
         }
     }
