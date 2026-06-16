@@ -15,10 +15,13 @@ let package = Package(
         .executable(name: "{{hbExecutableName}}", targets: ["{{hbExecutableName}}"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.0.0"),
+        .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.25.0"),
 {{#hbLambda}}
-        .package(url: "https://github.com/hummingbird-project/hummingbird-lambda.git", from: "2.0.0"),
+        .package(url: "https://github.com/hummingbird-project/hummingbird-lambda.git", from: "2.1.0"),
 {{/hbLambda}}
+{{#hbWebSocket}}
+        .package(url: "https://github.com/hummingbird-project/hummingbird-websocket.git", from: "2.7.0"),
+{{/hbWebSocket}}
         .package(url: "https://github.com/apple/swift-configuration.git", from: "1.0.0", traits: [.defaults, "CommandLineArguments"]),
 {{#hbOpenAPI}}
         .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.6.0"),
@@ -34,6 +37,9 @@ let package = Package(
 {{#hbLambda}}
                 .product(name: "HummingbirdLambda", package: "hummingbird-lambda"),
 {{/hbLambda}}
+{{#hbWebSocket}}
+                .product(name: "HummingbirdWebSocket", package: "hummingbird-websocket"),
+{{/hbWebSocket}}
 {{#hbOpenAPI}}
                 .byName(name: "{{hbExecutableName}}API"),
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),

@@ -31,10 +31,20 @@
           {"name": "FunctionURL"}
         ],
         "contextKey": "hbLambdaType",
-        "next": "Features"
+        "next": "LambdaFeatures"
       }
     },
     "Features": {
+      "question": "Which features would you like to enable?",
+      "multi-select": {
+        "options": [
+          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
+          {"name": "WebSockets", "contextKey": "hbWebSocket"},
+          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
+        ]
+      }
+    },
+    "LambdaFeatures": {
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
