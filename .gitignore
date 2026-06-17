@@ -10,3 +10,4 @@ xcuserdata/
 !/.vscode/hummingbird.code-snippets
 !/.vscode/tasks.json
 {{/hbVSCode}}
+.env
