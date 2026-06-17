@@ -9,5 +9,4 @@ xcuserdata/
 {{#hbVSCodeSnippets}}
 !/.vscode/hummingbird.code-snippets
 {{/hbVSCodeSnippets}}
-.env.*
 .env
