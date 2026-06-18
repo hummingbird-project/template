@@ -6,6 +6,9 @@ import Hummingbird
 {{#hbLambda}}
 import HummingbirdLambda
 {{/hbLambda}}
+{{#hbWebSocket}}
+import HummingbirdWebSocket
+{{/hbWebSocket}}
 import Logging
 {{#hbOpenAPI}}
 import OpenAPIHummingbird
@@ -13,6 +16,9 @@ import OpenAPIHummingbird
 
 // Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<{{hbLambdaType}}Request>{{/hbLambda}}
 typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<{{hbLambdaType}}Request>{{/hbLambda}}
+{{#hbWebSocket}}
+typealias AppWSRequestContext = BasicWebSocketRequestContext
+{{/hbWebSocket}}
 
 {{^hbLambda}}
 ///  Build application
@@ -30,9 +36,15 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         return logger
     }()
     let router = try buildRouter()
+{{#hbWebSocket}}
+    let wsRouter = try buildWebSocketRouter()
+{{/hbWebSocket}}
 {{^hbLambda}}
     let app = Application(
         router: router,
+{{#hbWebSocket}}
+        server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
+{{/hbWebSocket}}
         configuration: ApplicationConfiguration(reader: reader.scoped(to: "http")),
         logger: logger
     )
@@ -72,3 +84,29 @@ func buildRouter() throws -> Router<AppRequestContext> {
 {{/hbOpenAPI}}
     return router
 }
+
+{{#hbWebSocket}}
+/// Build websocket router
+func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
+    let router = Router(context: AppWSRequestContext.self)
+    // Add middleware
+    router.addMiddleware {
+        // logging middleware
+        LogRequestsMiddleware(.info)
+    }
+    // Add default endpoint
+    router.ws("/ws") { request, context in
+        return .upgrade()
+    } onUpgrade: { inbound, outbound, context in
+        for try await message in inbound.messages(maxSize: 1_000_000) {
+            switch message {
+            case .binary(let buffer):
+                try await outbound.write(.text("Binary message, length: \(buffer.readableBytes)"))
+            case .text(let string):
+                try await outbound.write(.text("Text message, length: \(string.count)"))
+            }
+        }
+    }
+    return router
+}
+{{/hbWebSocket}}
