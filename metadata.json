@@ -5,7 +5,7 @@
       "branch": {
         "options": [
           {"name": "Server","next": "AppName"},
-          {"name": "Lambda","next": "LambdaType","contextKey": "hbLambda"}
+          {"name": "Lambda","next": "LambdaType","context": {"set": "hbLambda"}}
         ]
       }
     },
@@ -18,7 +18,7 @@
           "noWhitespace",
           "allASCII"
         ],
-        "contextKey": "hbExecutableName",
+        "context": {"set": "hbExecutableName"},
         "next": "Features"
       }
     },
@@ -30,7 +30,7 @@
           {"name": "APIGatewayV2"},
           {"name": "FunctionURL"}
         ],
-        "contextKey": "hbLambdaType",
+        "context": {"set": "hbLambdaType"},
         "next": "LambdaFeatures"
       }
     },
@@ -38,9 +38,9 @@
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
-          {"name": "WebSockets", "contextKey": "hbWebSocket"},
-          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
+          {"name": "OpenAPI", "context": {"set": "hbOpenAPI"}},
+          {"name": "WebSockets", "context": {"set": "hbWebSocket"}},
+          {"name": "Visual Studio Code Snippets", "context": {"set": "hbVSCodeSnippets"}}
         ]
       }
     },
@@ -48,8 +48,8 @@
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
-          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
+          {"name": "OpenAPI", "context": "hbOpenAPI"},
+          {"name": "Visual Studio Code Snippets", "context": {"set": "hbVSCodeSnippets"}}
         ]
       }
     }
@@ -64,5 +64,5 @@
     "LICENSE",
     "metadata.json"
   ],
-  "version": 2
+  "version": 3
 }
