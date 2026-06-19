@@ -1,15 +1,17 @@
 {
-  "questions": {
-    "start": {
+  "questions": [
+    {
+      "id": "app",
       "question": "What kind of application are you building",
       "branch": {
         "options": [
-          {"name": "Server","next": "AppName"},
-          {"name": "Lambda","next": "LambdaType","contextKey": "hbLambda"}
+          {"name": "server","displayName":"Server","next": "name"},
+          {"name": "lambda","displayName":"Lambda","next": "lambda-type","contextKey": "hbLambda"}
         ]
       }
     },
-    "AppName": {
+    {
+      "id": "name",
       "question": "What would you like your executable to be named?",
       "text": {
         "prompt": "App Name: ",
@@ -19,10 +21,11 @@
           "allASCII"
         ],
         "contextKey": "hbExecutableName",
-        "next": "Features"
+        "next": "features"
       }
     },
-    "LambdaType": {
+    {
+      "id": "lambda-type",
       "question": "What kind of lambda are you building",
       "select": {
         "options": [
@@ -31,29 +34,31 @@
           {"name": "FunctionURL"}
         ],
         "contextKey": "hbLambdaType",
-        "next": "LambdaFeatures"
+        "next": "lambda-features"
       }
     },
-    "Features": {
+    {
+      "id": "features",
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
-          {"name": "WebSockets", "contextKey": "hbWebSocket"},
-          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
+          {"name": "openapi", "displayName": "OpenAPI", "contextKey": "hbOpenAPI"},
+          {"name": "websockets", "displayName": "WebSockets", "contextKey": "hbWebSocket"},
+          {"name": "vscode", "displayName": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
         ]
       }
     },
-    "LambdaFeatures": {
+    {
+      "id": "lambda-features",
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "contextKey": "hbOpenAPI"},
-          {"name": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
+          {"name": "openapi", "displayName": "OpenAPI", "contextKey": "hbOpenAPI"},
+          {"name": "vscode", "displayName": "Visual Studio Code Snippets", "contextKey": "hbVSCodeSnippets"}
         ]
       }
     }
-  },
+  ],
   "ignore": [
     ".github/workflows/test-configure.yml",
     ".vscode/settings.json",
