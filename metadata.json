@@ -43,7 +43,7 @@
       "multi-select": {
         "options": [
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
-          {"name": "websockets", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
+          {"name": "websocket", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
           {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
         ],
         "next": "database"
@@ -66,8 +66,29 @@
       "branch": {
         "options": [
           {"name": "no", "displayName":"No"},
-          {"name": "postgres-nio", "displayName":"PostgresNIO (Raw SQL)", "context": [{"set": "hbPostgresNIO"}, {"set": "hbPostgres"}]},
-          {"name": "fluent", "displayName":"Fluent (ORM)", "context": [{"set": "hbFluent"}, {"set": "hbPostgres"}]}
+          {
+            "name": "postgres-nio", 
+            "displayName":"PostgresNIO (Raw SQL)", 
+            "context": [
+              {"set": "hbPostgresNIO"}, 
+              {"set": "hbPostgres"}, 
+              {"append": {"key": "hbServices", "value": "postgresClient"}},
+              {"append": {"key": "hbServices", "value": "databaseMigrationService"}},
+              {"append": {"key": "hbRouterParams", "value": "postgresClient"}},
+              {"append": {"key": "hbRouterParamTypes", "value": "postgresClient: PostgresClient"}}
+            ]
+          },
+          {
+            "name": "fluent", 
+            "displayName":"Fluent (ORM)", 
+            "context": [
+              {"set": "hbFluent"}, 
+              {"set": "hbPostgres"},
+              {"append": {"key": "hbServices", "value": "fluent"}},
+              {"append": {"key": "hbRouterParams", "value": "fluent"}},
+              {"append": {"key": "hbRouterParamTypes", "value": "fluent: Fluent"}}
+            ]
+          }
         ]
       }
     }
