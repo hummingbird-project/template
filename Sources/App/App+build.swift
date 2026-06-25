@@ -80,6 +80,13 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
     if reader.bool(forKey: "db.migrate") == true {
         try await databaseMigrate(postgresClient: postgresClient, migrations: migrations, logger: logger)
     }
+    // Database migration service: verifies all migrations have been applied
+    let databaseMigrationService = DatabaseMigrationService(
+        client: postgresClient, 
+        migrations: migrations, 
+        logger: logger,
+        dryRun: true
+    )
 {{/hbPostgresNIO}}
 {{#hbFluent}}
     // Only run database migration once all migrations have been added
@@ -89,7 +96,16 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         exit(0)
     }
 {{/hbFluent}}
+{{#first(hbRouterParams)}}
+    let router = try buildRouter(
+{{#hbRouterParams}}
+        {{.}}: {{.}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+    )
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
     let router = try buildRouter()
+{{/first(hbRouterParams)}}
 {{#hbWebSocket}}
     let wsRouter = try buildWebSocketRouter()
 {{/hbWebSocket}}
@@ -100,20 +116,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
 {{/hbWebSocket}}
         configuration: ApplicationConfiguration(reader: reader.scoped(to: "http")),
-{{#hbPostgresNIO}}
-        services: [
-            postgresClient,
-            DatabaseMigrationService(
-                client: postgresClient, 
-                migrations: migrations, 
-                logger: logger,
-                dryRun: true
-            )
-        ],
-{{/hbPostgresNIO}}
-{{#hbFluent}}
-        services: [fluent],
-{{/hbFluent}}
+{{#first(hbServices)}}
+        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
+{{/first(hbServices)}}
         logger: logger
     )
     return app
@@ -121,20 +126,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 {{#hbLambda}}
     let lambda = {{hbLambdaType}}LambdaFunction(
         router: router,
-{{#hbPostgresNIO}}
-        services: [
-            postgresClient,
-            DatabaseMigrationService(
-                client: postgresClient, 
-                migrations: migrations, 
-                logger: logger,
-                dryRun: true
-            )
-        ],
-{{/hbPostgresNIO}}
-{{#hbFluent}}
-        services: [fluent],
-{{/hbFluent}}
+{{#first(hbServices)}}
+        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
+{{/first(hbServices)}}
         logger: logger
     )
     return lambda
@@ -142,7 +136,16 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 }
 
 /// Build router
+{{#first(hbRouterParamTypes)}}
+func buildRouter(
+{{#hbRouterParamTypes}}
+    {{.}}{{^last()}},{{/last()}}
+{{/hbRouterParamTypes}}
+) throws -> Router<AppRequestContext> {
+{{/first(hbRouterParamTypes)}}
+{{^first(hbRouterParamTypes)}}
 func buildRouter() throws -> Router<AppRequestContext> {
+{{/first(hbRouterParamTypes)}}
     let router = Router(context: AppRequestContext.self)
     // Add middleware
     router.addMiddleware {
@@ -169,7 +172,16 @@ func buildRouter() throws -> Router<AppRequestContext> {
 {{#hbWebSocket}}
 
 /// Build websocket router
+{{#first(hbRouterParamTypes)}}
+func buildWebSocketRouter(
+{{#hbRouterParamTypes}}
+    {{.}}{{^last()}},{{/last()}}
+{{/hbRouterParamTypes}}
+) throws -> Router<AppWSRequestContext> {
+{{/first(hbRouterParamTypes)}}
+{{^first(hbRouterParamTypes)}}
 func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
+{{/first(hbRouterParamTypes)}}
     let router = Router(context: AppWSRequestContext.self)
     // Add middleware
     router.addMiddleware {
@@ -180,7 +192,9 @@ func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
     router.ws("/ws") { request, context in
         return .upgrade()
     } onUpgrade: { inbound, outbound, context in
+        // Read inbound message
         for try await message in inbound.messages(maxSize: 1_000_000) {
+            // write type and size of message
             switch message {
             case .binary(let buffer):
                 try await outbound.write(.text("Binary message, length: \(buffer.readableBytes)"))
