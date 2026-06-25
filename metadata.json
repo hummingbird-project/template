@@ -74,8 +74,7 @@
               {"set": "hbPostgres"}, 
               {"append": {"key": "hbServices", "value": "postgresClient"}},
               {"append": {"key": "hbServices", "value": "databaseMigrationService"}},
-              {"append": {"key": "hbRouterParams", "value": "postgresClient"}},
-              {"append": {"key": "hbRouterParamTypes", "value": "postgresClient: PostgresClient"}}
+              {"append": {"key": "hbRouterParams", "value": {"name": "postgresClient", "type": "PostgresClient"}}}
             ]
           },
           {
@@ -85,8 +84,7 @@
               {"set": "hbFluent"}, 
               {"set": "hbPostgres"},
               {"append": {"key": "hbServices", "value": "fluent"}},
-              {"append": {"key": "hbRouterParams", "value": "fluent"}},
-              {"append": {"key": "hbRouterParamTypes", "value": "fluent: Fluent"}}
+              {"append": {"key": "hbRouterParams", "value": {"name": "fluent", "type": "Fluent"}}}
             ]
           }
         ]

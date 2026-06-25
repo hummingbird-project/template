@@ -99,7 +99,7 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 {{#first(hbRouterParams)}}
     let router = try buildRouter(
 {{#hbRouterParams}}
-        {{.}}: {{.}}{{^last()}},{{/last()}}
+        {{name}}: {{name}}{{^last()}},{{/last()}}
 {{/hbRouterParams}}
     )
 {{/first(hbRouterParams)}}
@@ -136,16 +136,16 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 }
 
 /// Build router
-{{#first(hbRouterParamTypes)}}
+{{#first(hbRouterParams)}}
 func buildRouter(
-{{#hbRouterParamTypes}}
-    {{.}}{{^last()}},{{/last()}}
-{{/hbRouterParamTypes}}
+{{#hbRouterParams}}
+    {{name}}: {{type}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
 ) throws -> Router<AppRequestContext> {
-{{/first(hbRouterParamTypes)}}
-{{^first(hbRouterParamTypes)}}
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
 func buildRouter() throws -> Router<AppRequestContext> {
-{{/first(hbRouterParamTypes)}}
+{{/first(hbRouterParams)}}
     let router = Router(context: AppRequestContext.self)
     // Add middleware
     router.addMiddleware {
@@ -172,16 +172,16 @@ func buildRouter() throws -> Router<AppRequestContext> {
 {{#hbWebSocket}}
 
 /// Build websocket router
-{{#first(hbRouterParamTypes)}}
+{{#first(hbRouterParams)}}
 func buildWebSocketRouter(
-{{#hbRouterParamTypes}}
-    {{.}}{{^last()}},{{/last()}}
-{{/hbRouterParamTypes}}
+{{#hbRouterParams}}
+    {{name}}: {{type}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
 ) throws -> Router<AppWSRequestContext> {
-{{/first(hbRouterParamTypes)}}
-{{^first(hbRouterParamTypes)}}
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
 func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
-{{/first(hbRouterParamTypes)}}
+{{/first(hbRouterParams)}}
     let router = Router(context: AppWSRequestContext.self)
     // Add middleware
     router.addMiddleware {
