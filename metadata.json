@@ -1,15 +1,17 @@
 {
-  "questions": {
-    "start": {
+  "questions": [
+    {
+      "id": "app",
       "question": "What kind of application are you building",
       "branch": {
         "options": [
-          {"name": "Server","next": "AppName"},
-          {"name": "Lambda","next": "LambdaType","context": {"set": "hbLambda"}}
+          {"name": "server", "displayName":"Server", "next": "name"},
+          {"name": "lambda", "displayName":"Lambda", "next": "lambda","context": {"set": "hbLambda"}}
         ]
       }
     },
-    "AppName": {
+    {
+      "id": "name",
       "question": "What would you like your executable to be named?",
       "text": {
         "prompt": "App Name: ",
@@ -19,10 +21,11 @@
           "allASCII"
         ],
         "context": {"set": "hbExecutableName"},
-        "next": "Features"
+        "next": "features"
       }
     },
-    "LambdaType": {
+    {
+      "id": "lambda",
       "question": "What kind of lambda are you building",
       "select": {
         "options": [
@@ -31,29 +34,31 @@
           {"name": "FunctionURL"}
         ],
         "context": {"set": "hbLambdaType"},
-        "next": "LambdaFeatures"
+        "next": "lambda-features"
       }
     },
-    "Features": {
+    {
+      "id": "features",
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "context": {"set": "hbOpenAPI"}},
-          {"name": "WebSockets", "context": {"set": "hbWebSocket"}},
-          {"name": "Visual Studio Code Snippets", "context": {"set": "hbVSCodeSnippets"}}
+          {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
+          {"name": "websockets", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
+          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
         ]
       }
     },
-    "LambdaFeatures": {
+    {
+      "id": "lambda-features",
       "question": "Which features would you like to enable?",
       "multi-select": {
         "options": [
-          {"name": "OpenAPI", "context": "hbOpenAPI"},
-          {"name": "Visual Studio Code Snippets", "context": {"set": "hbVSCodeSnippets"}}
+          {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
+          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
         ]
       }
     }
-  },
+  ],
   "ignore": [
     ".github/workflows/test-configure.yml",
     ".vscode/settings.json",
