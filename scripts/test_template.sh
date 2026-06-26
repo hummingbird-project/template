@@ -277,16 +277,12 @@ test_interactive_all_defaults() {
 
     run_expect "
         set timeout 30
-        spawn $CONFIGURE $OUTPUT_DIR
-        expect \"Enter your Swift package name:\"
+        spawn $CONFIGURE $BASE_OPTIONS $OUTPUT_DIR
+        expect \"What kind of application are you building\"
         send \"\r\"
-        expect \"Do you want to build an AWS Lambda function?\"
-        send \"\r\"
-        expect \"Enter your executable name:\"
-        send \"\r\"
-        expect \"Do you want to use the OpenAPI generator?\"
-        send \"\r\"
-        expect \"Include Visual Studio Code snippets:\"
+        expect \"What would you like your executable to be named?\"
+        send \"App\r\"
+        expect \"Which features would you like to enable?\"
         send \"\r\"
         expect eof
         catch wait result
@@ -311,86 +307,40 @@ test_interactive_custom_values() {
 
     run_expect "
         set timeout 30
-        spawn $CONFIGURE $OUTPUT_DIR
-        expect \"Enter your Swift package name:\"
+        spawn $CONFIGURE $BASE_OPTIONS $OUTPUT_DIR
+        expect \"What kind of application are you building\"
+        send \"\r\"
+        expect \"What would you like your executable to be named?\"
         send \"CustomPkg\r\"
-        expect \"Do you want to build an AWS Lambda function?\"
-        send \"n\r\"
-        expect \"Enter your executable name:\"
-        send \"MyExe\r\"
-        expect \"Do you want to use the OpenAPI generator?\"
-        send \"y\r\"
-        expect \"Include Visual Studio Code snippets:\"
-        send \"y\r\"
+        expect \"Which features would you like to enable?\"
+        send \" \r\"
         expect eof
         catch wait result
         exit [lindex \$result 3]
     "
     assert_exit_code $? 0 "exits successfully"
     assert_file_contains "$OUTPUT_DIR/Package.swift" "CustomPkg" "package name is CustomPkg"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "MyExe" "executable name is MyExe"
     assert_dir_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI directory created"
 
     teardown
 }
 
 # ============================================================================
-# Test: Flag without --defaults — flag's prompt is skipped, others appear
+# Test: Everything enabled builds and runs tests
 # ============================================================================
-test_interactive_with_openapi_flag() {
-    echo "TEST: --openapi without --defaults — skips openapi prompt, prompts for rest"
+test_everything_builds_and_tests_pass() {
+    echo "TEST: Everything enabled builds and runs tests"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/interactive_flag"
+    local OUTPUT_DIR="$TEST_TMPDIR/MyApp"
 
-    run_expect "
-        set timeout 30
-        spawn $CONFIGURE $OUTPUT_DIR --openapi
-        expect \"Enter your Swift package name:\"
-        send \"FlagTest\r\"
-        expect \"Do you want to build an AWS Lambda function?\"
-        send \"n\r\"
-        expect \"Enter your executable name:\"
-        send \"App\r\"
-        # OpenAPI prompt should NOT appear — it was set by flag
-        expect \"Include Visual Studio Code snippets:\"
-        send \"n\r\"
-        expect eof
-        catch wait result
-        exit [lindex \$result 3]
-    "
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "FlagTest" "package name from interactive input"
-    assert_dir_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI enabled from flag"
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer name=my-app \
+        --answer features=openapi,websockets,vscode \
+         "$OUTPUT_DIR" \
+        </dev/null 2>&1
 
-    teardown
-}
-
-# ============================================================================
-# Test: --lambda flag without --defaults — skips lambda + exe prompts
-# ============================================================================
-test_interactive_with_lambda_flag() {
-    echo "TEST: --lambda without --defaults — skips lambda and executable prompts"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/interactive_lambda"
-
-    run_expect "
-        set timeout 30
-        spawn $CONFIGURE $OUTPUT_DIR --lambda
-        expect \"Enter your Swift package name:\"
-        send \"LambdaInteractive\r\"
-        # Lambda prompt should NOT appear — set by flag
-        # Executable prompt should NOT appear — forced by lambda
-        expect \"Do you want to use the OpenAPI generator?\"
-        send \"n\r\"
-        expect \"Include Visual Studio Code snippets:\"
-        send \"n\r\"
-        expect eof
-        catch wait result
-        exit [lindex \$result 3]
-    "
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "LambdaInteractive" "package name from interactive input"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda enabled from flag"
+    cd "$OUTPUT_DIR"
+    swift test
 
     teardown
 }
@@ -417,6 +367,11 @@ test_unknown_option
 echo ""
 test_generated_ci_yml
 echo ""
+test_interactive_all_defaults
+echo ""
+test_interactive_custom_values
+echo ""
+test_everything_builds_and_tests_pass
 
 echo ""
 echo "========================================"
