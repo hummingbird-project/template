@@ -72,8 +72,7 @@
             "context": [
               {"set": "hbPostgresNIO"}, 
               {"set": "hbPostgres"}, 
-              {"append": {"key": "hbServices", "value": "postgresClient"}},
-              {"append": {"key": "hbServices", "value": "databaseMigrationService"}},
+              {"set": "hbServices"},
               {"append": {"key": "hbRouterParams", "value": {"name": "postgresClient", "type": "PostgresClient"}}}
             ]
           },
@@ -83,7 +82,7 @@
             "context": [
               {"set": "hbFluent"}, 
               {"set": "hbPostgres"},
-              {"append": {"key": "hbServices", "value": "fluent"}},
+              {"set": "hbServices"},
               {"append": {"key": "hbRouterParams", "value": {"name": "fluent", "type": "Fluent"}}}
             ]
           }
