@@ -107,7 +107,16 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
     let router = try buildRouter()
 {{/first(hbRouterParams)}}
 {{#hbWebSocket}}
+{{#first(hbRouterParams)}}
+    let wsRouter = try buildWebSocketRouter(
+{{#hbRouterParams}}
+        {{name}}: {{name}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+    )
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
     let wsRouter = try buildWebSocketRouter()
+{{/first(hbRouterParams)}}
 {{/hbWebSocket}}
 {{^hbLambda}}
     let app = Application(
