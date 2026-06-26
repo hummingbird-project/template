@@ -2,7 +2,13 @@
 import AWSLambdaEvents
 {{/hbLambda}}
 import Configuration
+{{#hbFluent}}
+import FluentPostgresDriver
+{{/hbFluent}}
 import Hummingbird
+{{#hbFluent}}
+import HummingbirdFluent
+{{/hbFluent}}
 {{#hbLambda}}
 import HummingbirdLambda
 {{/hbLambda}}
@@ -13,6 +19,10 @@ import Logging
 {{#hbOpenAPI}}
 import OpenAPIHummingbird
 {{/hbOpenAPI}}
+{{#hbPostgresNIO}}
+import PostgresMigrations
+import PostgresNIO
+{{/hbPostgresNIO}}
 
 // Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<{{hbLambdaType}}Request>{{/hbLambda}}
 typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<{{hbLambdaType}}Request>{{/hbLambda}}
@@ -35,9 +45,78 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         logger.logLevel = reader.string(forKey: "log.level", as: Logger.Level.self, default: .info)
         return logger
     }()
+{{#hbPostgresNIO}}
+    // Postgres client
+    let postgresClient = try PostgresClient(
+        configuration: .init(
+            host: reader.string(forKey: "postgres.host", default: "127.0.0.1"),
+            port: reader.int(forKey: "postgres.port", default: 5432),
+            username: reader.requiredString(forKey: "postgres.user"),
+            password: reader.requiredString(forKey: "postgres.password"),
+            database: reader.requiredString(forKey: "postgres.database"),
+            tls: .disable
+        )
+    )
+    let migrations = DatabaseMigrations()
+{{/hbPostgresNIO}}
+{{#hbFluent}}
+    let fluent = Fluent(logger: logger)
+    try fluent.databases.use(
+        .postgres(
+            configuration: .init(
+                hostname: reader.string(forKey: "postgres.host", default: "127.0.0.1"),
+                port: reader.int(forKey: "postgres.port", default: 5432),
+                username: reader.requiredString(forKey: "postgres.user"),
+                password: reader.requiredString(forKey: "postgres.password"),
+                database: reader.requiredString(forKey: "postgres.database"),
+                tls: .disable
+            )
+        ),
+        as: .psql
+    )
+{{/hbFluent}}
+{{#hbPostgresNIO}}
+    // Only run database migration once all migrations have been added
+    if reader.bool(forKey: "db.migrate") == true {
+        try await databaseMigrate(postgresClient: postgresClient, migrations: migrations, logger: logger)
+    }
+    // Database migration service: verifies all migrations have been applied
+    let databaseMigrationService = DatabaseMigrationService(
+        client: postgresClient, 
+        migrations: migrations, 
+        logger: logger,
+        dryRun: true
+    )
+{{/hbPostgresNIO}}
+{{#hbFluent}}
+    // Only run database migration once all migrations have been added
+    if reader.bool(forKey: "db.migrate") == true {
+        logger.info("Running database migrations")
+        try await fluent.migrate()
+        exit(0)
+    }
+{{/hbFluent}}
+{{#first(hbRouterParams)}}
+    let router = try buildRouter(
+{{#hbRouterParams}}
+        {{name}}: {{name}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+    )
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
     let router = try buildRouter()
+{{/first(hbRouterParams)}}
 {{#hbWebSocket}}
+{{#first(hbRouterParams)}}
+    let wsRouter = try buildWebSocketRouter(
+{{#hbRouterParams}}
+        {{name}}: {{name}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+    )
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
     let wsRouter = try buildWebSocketRouter()
+{{/first(hbRouterParams)}}
 {{/hbWebSocket}}
 {{^hbLambda}}
     let app = Application(
@@ -46,6 +125,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
 {{/hbWebSocket}}
         configuration: ApplicationConfiguration(reader: reader.scoped(to: "http")),
+{{#first(hbServices)}}
+        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
+{{/first(hbServices)}}
         logger: logger
     )
     return app
@@ -53,6 +135,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 {{#hbLambda}}
     let lambda = {{hbLambdaType}}LambdaFunction(
         router: router,
+{{#first(hbServices)}}
+        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
+{{/first(hbServices)}}
         logger: logger
     )
     return lambda
@@ -60,7 +145,16 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 }
 
 /// Build router
+{{#first(hbRouterParams)}}
+func buildRouter(
+{{#hbRouterParams}}
+    {{name}}: {{type}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+) throws -> Router<AppRequestContext> {
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
 func buildRouter() throws -> Router<AppRequestContext> {
+{{/first(hbRouterParams)}}
     let router = Router(context: AppRequestContext.self)
     // Add middleware
     router.addMiddleware {
@@ -84,10 +178,19 @@ func buildRouter() throws -> Router<AppRequestContext> {
 {{/hbOpenAPI}}
     return router
 }
-
 {{#hbWebSocket}}
+
 /// Build websocket router
+{{#first(hbRouterParams)}}
+func buildWebSocketRouter(
+{{#hbRouterParams}}
+    {{name}}: {{type}}{{^last()}},{{/last()}}
+{{/hbRouterParams}}
+) throws -> Router<AppWSRequestContext> {
+{{/first(hbRouterParams)}}
+{{^first(hbRouterParams)}}
 func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
+{{/first(hbRouterParams)}}
     let router = Router(context: AppWSRequestContext.self)
     // Add middleware
     router.addMiddleware {
@@ -98,7 +201,9 @@ func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
     router.ws("/ws") { request, context in
         return .upgrade()
     } onUpgrade: { inbound, outbound, context in
+        // Read inbound message
         for try await message in inbound.messages(maxSize: 1_000_000) {
+            // write type and size of message
             switch message {
             case .binary(let buffer):
                 try await outbound.write(.text("Binary message, length: \(buffer.readableBytes)"))
@@ -110,3 +215,13 @@ func buildWebSocketRouter() throws -> Router<AppWSRequestContext> {
     return router
 }
 {{/hbWebSocket}}
+{{#hbPostgresNIO}}
+
+/// Perform database migration and exit
+func databaseMigrate(postgresClient: PostgresClient, migrations: DatabaseMigrations, logger: Logger) async throws -> Never {
+    logger.info("Running database migrations")
+    async let _ = postgresClient.run()
+    try await migrations.apply(client: postgresClient, logger: logger, dryRun: false)
+    exit(0)
+}
+{{/hbPostgresNIO}}

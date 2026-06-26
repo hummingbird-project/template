@@ -16,6 +16,9 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/hummingbird-project/hummingbird.git", from: "2.25.0"),
+{{#hbFluent}}
+        .package(url: "https://github.com/hummingbird-project/hummingbird-fluent.git", from: "2.0.0"),
+{{/hbFluent}}
 {{#hbLambda}}
         .package(url: "https://github.com/hummingbird-project/hummingbird-lambda.git", from: "2.1.0"),
 {{/hbLambda}}
@@ -24,16 +27,31 @@ let package = Package(
 {{/hbWebSocket}}
         .package(url: "https://github.com/apple/swift-configuration.git", from: "1.0.0", traits: [.defaults, "CommandLineArguments"]),
 {{#hbOpenAPI}}
-        .package(url: "https://github.com/apple/swift-openapi-generator", from: "1.6.0"),
-        .package(url: "https://github.com/apple/swift-openapi-runtime", from: "1.7.0"),
+        .package(url: "https://github.com/apple/swift-openapi-generator.git", from: "1.6.0"),
+        .package(url: "https://github.com/apple/swift-openapi-runtime.git", from: "1.7.0"),
         .package(url: "https://github.com/hummingbird-project/swift-openapi-hummingbird.git", from: "2.0.1"),
 {{/hbOpenAPI}}
+{{#hbPostgresNIO}}
+        .package(url: "https://github.com/vapor/postgres-nio.git", from: "1.33.0"),
+        .package(url: "https://github.com/hummingbird-project/postgres-migrations.git", from: "1.0.0"),
+{{/hbPostgresNIO}}
+{{#hbFluent}}
+        .package(url: "https://github.com/vapor/fluent-kit.git", from: "1.56.0"),
+        .package(url: "https://github.com/vapor/fluent-postgres-driver.git", from: "2.12.0"),
+{{/hbFluent}}
     ],
     targets: [
         .executableTarget(name: "{{hbExecutableName}}",
             dependencies: [
                 .product(name: "Configuration", package: "swift-configuration"),
+{{#hbFluent}}
+                .product(name: "FluentKit", package: "fluent-kit"),
+                .product(name: "FluentPostgresDriver", package: "fluent-postgres-driver"),
+{{/hbFluent}}
                 .product(name: "Hummingbird", package: "hummingbird"),
+{{#hbFluent}}
+                .product(name: "HummingbirdFluent", package: "hummingbird-fluent"),
+{{/hbFluent}}
 {{#hbLambda}}
                 .product(name: "HummingbirdLambda", package: "hummingbird-lambda"),
 {{/hbLambda}}
@@ -45,6 +63,10 @@ let package = Package(
                 .product(name: "OpenAPIRuntime", package: "swift-openapi-runtime"),
                 .product(name: "OpenAPIHummingbird", package: "swift-openapi-hummingbird"),
 {{/hbOpenAPI}}
+{{#hbPostgresNIO}}
+                .product(name: "PostgresNIO", package: "postgres-nio"),
+                .product(name: "PostgresMigrations", package: "postgres-migrations"),
+{{/hbPostgresNIO}}
             ],
             path: "Sources/App"
         ),
