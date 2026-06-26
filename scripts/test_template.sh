@@ -200,6 +200,28 @@ test_openapi_only() {
 }
 
 # ============================================================================
+# Test: Only --answer features=websockets
+# ============================================================================
+test_websockets_only() {
+    echo "TEST: Only --openapi (package name defaults to folder basename)"
+    setup
+    local OUTPUT_DIR="$TEST_TMPDIR/my_project"
+
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer features=websockets \
+        "$OUTPUT_DIR" \
+        </dev/null 2>&1
+
+    assert_exit_code $? 0 "exits successfully"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "my_project" "package name defaults to cleaned folder basename"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "hummingbird-websocket" "Package.swift contains WebSocket dependency"
+    assert_file_contains "$OUTPUT_DIR/Sources/App/App+build.swift" "buildWebSocketRouter" "App+build.swift contains buildWebSocketRouter function"
+
+    teardown
+}
+
+# ============================================================================
 # Test: Invalid package name via flag
 # ============================================================================
 test_invalid_package_name() {
@@ -361,6 +383,8 @@ echo ""
 test_minimal_flags
 echo ""
 test_openapi_only
+echo ""
+test_websockets_only
 echo ""
 test_invalid_package_name
 echo ""
