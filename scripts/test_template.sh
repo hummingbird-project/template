@@ -178,12 +178,12 @@ test_minimal_flags() {
 }
 
 # ============================================================================
-# Test: Only --answer features=openapi — package name defaults to folder basename
+# Test: Only --answer features=openapi (package name defaults to folder basename)
 # ============================================================================
 test_openapi_only() {
-    echo "TEST: Only --openapi (package name defaults to folder basename)"
+    echo "TEST: Only --answer features=openapi (package name defaults to folder basename)"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/my_project"
+    local OUTPUT_DIR="$TEST_TMPDIR/openapi_project"
 
     "$CONFIGURE" $BASE_OPTIONS \
         --answer features=openapi \
@@ -191,7 +191,7 @@ test_openapi_only() {
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "my_project" "package name defaults to cleaned folder basename"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "openapi_project" "package name defaults to cleaned folder basename"
     assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
     assert_dir_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI directory created"
     assert_file_not_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda defaults to off"
@@ -203,9 +203,9 @@ test_openapi_only() {
 # Test: Only --answer features=websockets
 # ============================================================================
 test_websockets_only() {
-    echo "TEST: Only --openapi (package name defaults to folder basename)"
+    echo "TEST: Only --answer features=websockets"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/my_project"
+    local OUTPUT_DIR="$TEST_TMPDIR/ws_project"
 
     "$CONFIGURE" $BASE_OPTIONS \
         --answer features=websockets \
@@ -213,10 +213,34 @@ test_websockets_only() {
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "my_project" "package name defaults to cleaned folder basename"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "ws_project" "package name defaults to cleaned folder basename"
     assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
     assert_file_contains "$OUTPUT_DIR/Package.swift" "hummingbird-websocket" "Package.swift contains WebSocket dependency"
     assert_file_contains "$OUTPUT_DIR/Sources/App/App+build.swift" "buildWebSocketRouter" "App+build.swift contains buildWebSocketRouter function"
+
+    teardown
+}
+
+# ============================================================================
+# Test: Only --answer database=postgres-nio
+# ============================================================================
+test_postgres_database_only() {
+    echo "TEST: Only --answer database=postgres-nio"
+    setup
+    local OUTPUT_DIR="$TEST_TMPDIR/postgres"
+
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer database=postgres-nio \
+        "$OUTPUT_DIR" \
+        </dev/null 2>&1
+
+    assert_exit_code $? 0 "exits successfully"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "postgres" "package name defaults to cleaned folder basename"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "postgres-nio" "Package.swift contains postgres-nio dependency"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "postgres-migrations" "Package.swift contains postgres-migrations dependency"
+    assert_file_contains "$OUTPUT_DIR/Sources/App/App+build.swift" "PostgresClient(" "App+build.swift creates a PostgresClient"
+    assert_file_exists "$OUTPUT_DIR/.env" ".env file is created"
+    assert_file_exists "$OUTPUT_DIR/docker-compose.yml" "docker-compose.yml is created"
 
     teardown
 }
@@ -306,6 +330,8 @@ test_interactive_all_defaults() {
         send \"App\r\"
         expect \"Which features would you like to enable?\"
         send \"\r\"
+        expect \"Would you like to include database support?\"
+        send \"\r\"
         expect eof
         catch wait result
         exit [lindex \$result 3]
@@ -336,6 +362,8 @@ test_interactive_custom_values() {
         send \"CustomPkg\r\"
         expect \"Which features would you like to enable?\"
         send \" \r\"
+        expect \"Would you like to include database support?\"
+        send \"\r\"
         expect eof
         catch wait result
         exit [lindex \$result 3]
@@ -353,7 +381,7 @@ test_interactive_custom_values() {
 test_everything_builds_and_tests_pass() {
     echo "TEST: Everything enabled builds and runs tests"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/MyApp"
+    local OUTPUT_DIR="$TEST_TMPDIR/test_build"
 
     "$CONFIGURE" $BASE_OPTIONS \
         --answer name=MyApp \
@@ -385,6 +413,8 @@ echo ""
 test_openapi_only
 echo ""
 test_websockets_only
+echo ""
+test_postgres_database_only
 echo ""
 test_invalid_package_name
 echo ""
