@@ -44,7 +44,7 @@
         "options": [
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
           {"name": "websockets", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
-          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
+          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCode"}}
         ]
       }
     },
@@ -54,7 +54,7 @@
       "multi-select": {
         "options": [
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
-          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
+          {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCode"}}
         ]
       }
     }
@@ -65,7 +65,8 @@
     "scripts/test_template.sh",
     "README.md",
     "LICENSE",
-    "metadata.json"
+    "metadata.json",
+    ".gitignore"
   ],
   "version": 3
 }
