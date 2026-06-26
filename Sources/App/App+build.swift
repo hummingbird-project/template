@@ -23,6 +23,9 @@ import OpenAPIHummingbird
 import PostgresMigrations
 import PostgresNIO
 {{/hbPostgresNIO}}
+{{#hbServices}}
+import ServiceLifecycle
+{{/hbServices}}   
 
 // Request context used by {{^hbLambda}}application{{/hbLambda}}{{#hbLambda}}lambda<{{hbLambdaType}}Request>{{/hbLambda}}
 typealias AppRequestContext = {{^hbLambda}}BasicRequestContext{{/hbLambda}}{{#hbLambda}}BasicLambdaRequestContext<{{hbLambdaType}}Request>{{/hbLambda}}
@@ -45,6 +48,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         logger.logLevel = reader.string(forKey: "log.level", as: Logger.Level.self, default: .info)
         return logger
     }()
+{{#hbServices}}
+    var services: [any Service] = []
+{{/hbServices}}   
 {{#hbPostgresNIO}}
     // Postgres client
     let postgresClient = try PostgresClient(
@@ -57,6 +63,7 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
             tls: .disable
         )
     )
+    services.append(postgresClient)
     let migrations = DatabaseMigrations()
 {{/hbPostgresNIO}}
 {{#hbFluent}}
@@ -87,6 +94,7 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         logger: logger,
         dryRun: true
     )
+    services.append(databaseMigrationService)
 {{/hbPostgresNIO}}
 {{#hbFluent}}
     // Only run database migration once all migrations have been added
@@ -125,9 +133,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
         server: .http1WebSocketUpgrade(webSocketRouter: wsRouter),
 {{/hbWebSocket}}
         configuration: ApplicationConfiguration(reader: reader.scoped(to: "http")),
-{{#first(hbServices)}}
-        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
-{{/first(hbServices)}}
+{{#hbServices}}
+        services: services,
+{{/hbServices}}
         logger: logger
     )
     return app
@@ -135,9 +143,9 @@ func buildLambda(reader: ConfigReader) async throws -> {{hbLambdaType}}LambdaFun
 {{#hbLambda}}
     let lambda = {{hbLambdaType}}LambdaFunction(
         router: router,
-{{#first(hbServices)}}
-        services: [{{#hbServices}}{{.}}{{^last()}}, {{/last()}}{{/hbServices}}],
-{{/first(hbServices)}}
+{{#hbServices}}
+        services: services,
+{{/hbServices}}
         logger: logger
     )
     return lambda
