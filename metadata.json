@@ -43,7 +43,7 @@
       "multi-select": {
         "options": [
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
-          {"name": "websocket", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
+          {"name": "websockets", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
           {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCodeSnippets"}}
         ],
         "next": "database"
