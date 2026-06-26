@@ -60,11 +60,9 @@
     }
   ],
   "ignore": [
-    ".github/workflows/test-configure.yml",
+    ".github/workflows/test-template.yml",
     ".vscode/settings.json",
-    "configure.sh",
-    "scripts/download.sh",
-    "scripts/test_configure.sh",
+    "scripts/test_template.sh",
     "README.md",
     "LICENSE",
     "metadata.json"

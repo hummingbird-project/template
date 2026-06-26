@@ -1,0 +1,19 @@
+name: Test template
+
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: macos-26
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+    - name: Install HB
+      run: brew install hummingbird-project/tap/hb
+    - name: Run configure.sh tests
+      run: bash scripts/test_template.sh
