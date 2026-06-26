@@ -16,4 +16,4 @@ jobs:
     - name: Install HB
       run: brew install hummingbird-project/tap/hb
     - name: Run configure.sh tests
-      run: bash scripts/test_configure.sh
+      run: bash scripts/test_template.sh
