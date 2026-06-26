@@ -10,9 +10,13 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    container:
+      image: swift:latest
     steps:
     - name: Checkout
       uses: actions/checkout@v7
+    - name: Install HB
+      run: brew install hummingbird-project/tap/hb
     - name: Install expect
       run: sudo apt-get install -y expect
     - name: Run configure.sh tests

@@ -334,13 +334,14 @@ test_everything_builds_and_tests_pass() {
     local OUTPUT_DIR="$TEST_TMPDIR/MyApp"
 
     "$CONFIGURE" $BASE_OPTIONS \
-        --answer name=my-app \
+        --answer name=MyApp \
         --answer features=openapi,websockets,vscode \
          "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     cd "$OUTPUT_DIR"
     swift test
+    assert_exit_code $? 0 "exits successfully"
 
     teardown
 }
