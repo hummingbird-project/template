@@ -15,7 +15,5 @@ jobs:
       uses: actions/checkout@v7
     - name: Install HB
       run: brew install hummingbird-project/tap/hb
-    - name: Install expect
-      run: sudo apt-get install -y expect
     - name: Run configure.sh tests
       run: bash scripts/test_configure.sh
