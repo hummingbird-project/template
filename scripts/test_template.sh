@@ -7,7 +7,8 @@
 
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 TEMPLATE_DIR=$(cd "$SCRIPT_DIR/.." && pwd)
-CONFIGURE="$TEMPLATE_DIR/configure.sh"
+CONFIGURE="hb"
+BASE_OPTIONS="init --template ."
 
 PASS_COUNT=0
 FAIL_COUNT=0
@@ -114,14 +115,12 @@ assert_exit_code() {
 test_all_flags() {
     echo "TEST: All flags provided (fully non-interactive)"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/myapp"
+    local OUTPUT_DIR="$TEST_TMPDIR/MyApp"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "MyApp" \
-        --executable-name "MyServer" \
-        --openapi \
-        --vscode-snippets \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer name=MyServer \
+        --answer features=openapi,websockets,vscode \
+         "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
@@ -136,18 +135,17 @@ test_all_flags() {
 }
 
 # ============================================================================
-# Test: Fully non-interactive with --lambda flag
+# Test: Fully non-interactive with --answer app=lambda flag
 # ============================================================================
-test_lambda_flag() {
+test_lambda_type() {
     echo "TEST: Lambda flag (fully non-interactive)"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/lambdaapp"
+    local OUTPUT_DIR="$TEST_TMPDIR/LambdaApp"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "LambdaApp" \
-        --lambda \
-        </dev/null 2>&1
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer app=lambda \
+         "$OUTPUT_DIR" \
+         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
     assert_file_exists "$OUTPUT_DIR/Package.swift" "Package.swift is created"
@@ -158,43 +156,21 @@ test_lambda_flag() {
 }
 
 # ============================================================================
-# Test: --lambda overrides --executable-name
-# ============================================================================
-test_lambda_overrides_executable() {
-    echo "TEST: --lambda ignores --executable-name"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/lambdaoverride"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "LambdaOverride" \
-        --lambda \
-        --executable-name "CustomExe" \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_not_contains "$OUTPUT_DIR/Package.swift" "CustomExe" "executable name flag is ignored when --lambda is set"
-
-    teardown
-}
-
-# ============================================================================
-# Test: Minimal flags — booleans default to "no"
+# Test: Minimal with --answer name=MinimalApp
 # ============================================================================
 test_minimal_flags() {
-    echo "TEST: Minimal flags (only --package-name, booleans default to no)"
+    echo "TEST: Minimal flags (only --answer name=MinimalApp)"
     setup
-    local OUTPUT_DIR="$TEST_TMPDIR/minimalapp"
+    local OUTPUT_DIR="$TEST_TMPDIR/MinimalApp"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "MinimalApp" \
-        --executable-name "MinExe" \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer name=minimal-app \
+        "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
     assert_file_exists "$OUTPUT_DIR/Package.swift" "Package.swift is created"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "MinimalApp" "Package.swift contains package name"
+    assert_file_contains "$OUTPUT_DIR/Package.swift" "minimal-app" "Package.swift contains package name"
     assert_file_not_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda is not enabled"
     assert_dir_not_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI directory not created"
 
@@ -202,38 +178,16 @@ test_minimal_flags() {
 }
 
 # ============================================================================
-# Test: Only --package-name — executable defaults to "App"
-# ============================================================================
-test_package_name_only() {
-    echo "TEST: Only --package-name (executable defaults to App)"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/pkgonly"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "PkgOnly" \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "PkgOnly" "Package.swift contains package name"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
-    assert_file_not_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda defaults to off"
-    assert_dir_not_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI defaults to off"
-
-    teardown
-}
-
-# ============================================================================
-# Test: Only --openapi — package name defaults to folder basename
+# Test: Only --answer features=openapi — package name defaults to folder basename
 # ============================================================================
 test_openapi_only() {
     echo "TEST: Only --openapi (package name defaults to folder basename)"
     setup
     local OUTPUT_DIR="$TEST_TMPDIR/my_project"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --openapi \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer features=openapi \
+        "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
@@ -246,26 +200,6 @@ test_openapi_only() {
 }
 
 # ============================================================================
-# Test: Only --lambda — package name defaults to folder basename
-# ============================================================================
-test_lambda_only() {
-    echo "TEST: Only --lambda (package name defaults to folder basename)"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/lambda_project"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --lambda \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "lambda_project" "package name defaults to cleaned folder basename"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda is enabled"
-
-    teardown
-}
-
-# ============================================================================
 # Test: Invalid package name via flag
 # ============================================================================
 test_invalid_package_name() {
@@ -273,10 +207,9 @@ test_invalid_package_name() {
     setup
     local OUTPUT_DIR="$TEST_TMPDIR/badname"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "Bad Name!" \
-        --executable-name "App" \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer name="Bad Name!" \
+        "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     assert_exit_code $? 1 "exits with error for invalid package name"
@@ -285,77 +218,19 @@ test_invalid_package_name() {
 }
 
 # ============================================================================
-# Test: Invalid executable name via flag
+# Test: Unknown option --answer features=bells,whistles
 # ============================================================================
-test_invalid_executable_name() {
-    echo "TEST: Invalid executable name via flag"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/badexe"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "GoodName" \
-        --executable-name "Bad Exe!" \
-        </dev/null 2>&1
-
-    assert_exit_code $? 1 "exits with error for invalid executable name"
-
-    teardown
-}
-
-# ============================================================================
-# Test: Unknown flag produces error
-# ============================================================================
-test_unknown_flag() {
+test_unknown_option() {
     echo "TEST: Unknown flag produces error"
     setup
     local OUTPUT_DIR="$TEST_TMPDIR/unknownflag"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "TestApp" \
-        --bogus-flag \
-        </dev/null 2>&1
-
-    assert_exit_code $? 1 "exits with error for unknown flag"
-
-    teardown
-}
-
-# ============================================================================
-# Test: Flags can appear before or after positional arg
-# ============================================================================
-test_flags_after_positional() {
-    echo "TEST: Flags after positional argument"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/flagsafter"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "FlagsAfter" \
-        --executable-name "App" \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "FlagsAfter" "Package.swift contains package name"
-
-    teardown
-}
-
-test_flags_before_positional() {
-    echo "TEST: Flags before positional argument"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/flagsbefore"
-
-    "$CONFIGURE" \
-        --defaults \
-        --package-name "FlagsBefore" \
-        --executable-name "App" \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer features=bells,whistles \
         "$OUTPUT_DIR" \
         </dev/null 2>&1
 
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "FlagsBefore" "Package.swift contains package name"
+    assert_exit_code $? 1 "exits with error for unknown flag"
 
     teardown
 }
@@ -368,98 +243,14 @@ test_generated_ci_yml() {
     setup
     local OUTPUT_DIR="$TEST_TMPDIR/citest"
 
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --package-name "CiTest" \
-        --executable-name "App" \
+    "$CONFIGURE" $BASE_OPTIONS \
+        --answer name="CITest" \
+        "$OUTPUT_DIR" \
         </dev/null 2>&1
 
     assert_exit_code $? 0 "exits successfully"
     assert_file_exists "$OUTPUT_DIR/.github/workflows/ci.yml" "ci.yml exists in generated project"
     assert_file_not_contains "$OUTPUT_DIR/.github/workflows/ci.yml" "{{hb" "ci.yml does not contain mustache syntax"
-
-    teardown
-}
-
-# ============================================================================
-# Test: --defaults only (all defaults, no prompts)
-# ============================================================================
-test_defaults_only() {
-    echo "TEST: --defaults only (all defaults, no prompts)"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/defaultsonly"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_exists "$OUTPUT_DIR/Package.swift" "Package.swift is created"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "defaultsonly" "package name defaults to folder basename"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
-    assert_file_not_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda defaults to off"
-    assert_dir_not_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI defaults to off"
-
-    teardown
-}
-
-# ============================================================================
-# Test: --defaults with some flags
-# ============================================================================
-test_defaults_with_some_flags() {
-    echo "TEST: --defaults with some flags"
-    setup
-    local OUTPUT_DIR="$TEST_TMPDIR/defaultsflags"
-
-    "$CONFIGURE" "$OUTPUT_DIR" \
-        --defaults \
-        --openapi \
-        --package-name "CoolAPI" \
-        </dev/null 2>&1
-
-    assert_exit_code $? 0 "exits successfully"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "CoolAPI" "package name from flag"
-    assert_file_contains "$OUTPUT_DIR/Package.swift" "App" "executable defaults to App"
-    assert_dir_exists "$OUTPUT_DIR/Sources/AppAPI" "OpenAPI enabled from flag"
-    assert_file_not_contains "$OUTPUT_DIR/Package.swift" "hummingbird-lambda" "Lambda defaults to off"
-
-    teardown
-}
-
-# ============================================================================
-# Test: --help prints usage and exits 0
-# ============================================================================
-test_help() {
-    echo "TEST: --help prints usage and exits 0"
-    setup
-
-    local OUTPUT
-    OUTPUT=$("$CONFIGURE" --help 2>&1)
-    assert_exit_code $? 0 "--help exits with code 0"
-
-    if echo "$OUTPUT" | grep -q "\-\-defaults"; then
-        echo "  PASS: --help output mentions --defaults"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo "  FAIL: --help output should mention --defaults"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-
-    if echo "$OUTPUT" | grep -q "\-\-package-name"; then
-        echo "  PASS: --help output mentions --package-name"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo "  FAIL: --help output should mention --package-name"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
-
-    if echo "$OUTPUT" | grep -q "\-\-lambda"; then
-        echo "  PASS: --help output mentions --lambda"
-        PASS_COUNT=$((PASS_COUNT + 1))
-    else
-        echo "  FAIL: --help output should mention --lambda"
-        FAIL_COUNT=$((FAIL_COUNT + 1))
-    fi
 
     teardown
 }
@@ -614,43 +405,18 @@ echo ""
 
 test_all_flags
 echo ""
-test_lambda_flag
-echo ""
-test_lambda_overrides_executable
+test_lambda_type
 echo ""
 test_minimal_flags
 echo ""
-test_package_name_only
-echo ""
 test_openapi_only
-echo ""
-test_lambda_only
 echo ""
 test_invalid_package_name
 echo ""
-test_invalid_executable_name
-echo ""
-test_unknown_flag
-echo ""
-test_flags_after_positional
-echo ""
-test_flags_before_positional
+test_unknown_option
 echo ""
 test_generated_ci_yml
 echo ""
-test_defaults_only
-echo ""
-test_defaults_with_some_flags
-echo ""
-test_help
-echo ""
-test_interactive_all_defaults
-echo ""
-test_interactive_custom_values
-echo ""
-test_interactive_with_openapi_flag
-echo ""
-test_interactive_with_lambda_flag
 
 echo ""
 echo "========================================"

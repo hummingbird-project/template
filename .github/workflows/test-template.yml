@@ -1,18 +1,10 @@
-name: Test configure.sh
+name: Test template
 
 on:
   push:
     branches:
     - main
-    paths:
-    - 'configure.sh'
-    - 'scripts/test_configure.sh'
-    - '.github/workflows/test-configure.yml'
   pull_request:
-    paths:
-    - 'configure.sh'
-    - 'scripts/test_configure.sh'
-    - '.github/workflows/test-configure.yml'
   workflow_dispatch:
 
 jobs:
@@ -20,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
     - name: Install expect
       run: sudo apt-get install -y expect
     - name: Run configure.sh tests
