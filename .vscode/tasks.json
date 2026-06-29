@@ -1,0 +1,28 @@
+{{#hbVSCode}}
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "shell",
+			"command": [
+				"hb",
+				"watch",
+				"--use-swiftly",
+                "{{hbExecutableName}}"
+			],
+			"group": "build",
+			"problemMatcher": {
+				"base": "$swiftc",
+				"background": {
+					"activeOnStart": true,
+					"beginsPattern": "^Building for debugging...$",
+					"endsPattern": "^(?:Build of product '.*' complete!)|(?:Build failed.)"
+				}
+			},
+			"isBackground": true,
+			"label": "Hummingbird watch",
+			"detail": "hb watch --use-swiftly {{hbExecutableName}}"
+		}
+	]
+}
+{{/hbVSCode}}
