@@ -1,0 +1,16 @@
+{{#hbPostgres}}
+services:
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/hummingbird
+    environment:
+      - POSTGRES_PASSWORD=testing123
+      - POSTGRES_USER=hb
+      - POSTGRES_DB=hb
+volumes:
+  db:
+    driver: local
+{{/hbPostgres}}

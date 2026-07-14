@@ -45,7 +45,8 @@
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
           {"name": "websockets", "displayName":"WebSockets", "context": {"set": "hbWebSocket"}},
           {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCode"}}
-        ]
+        ],
+        "next": "database"
       }
     },
     {
@@ -55,6 +56,36 @@
         "options": [
           {"name": "openapi", "displayName":"OpenAPI", "context": {"set": "hbOpenAPI"}},
           {"name": "vscode", "displayName":"Visual Studio Code Support", "context": {"set": "hbVSCode"}}
+        ],
+        "next": "database"
+      }
+    },
+    {
+      "id": "database",
+      "question": "Would you like to include database support?",
+      "branch": {
+        "options": [
+          {"name": "no", "displayName":"No"},
+          {
+            "name": "postgres-nio", 
+            "displayName":"PostgresNIO (Raw SQL)", 
+            "context": [
+              {"set": "hbPostgresNIO"}, 
+              {"set": "hbPostgres"}, 
+              {"set": "hbServices"},
+              {"append": {"key": "hbRouterParams", "value": {"name": "postgresClient", "type": "PostgresClient"}}}
+            ]
+          },
+          {
+            "name": "fluent", 
+            "displayName":"Fluent (ORM)", 
+            "context": [
+              {"set": "hbFluent"}, 
+              {"set": "hbPostgres"},
+              {"set": "hbServices"},
+              {"append": {"key": "hbRouterParams", "value": {"name": "fluent", "type": "Fluent"}}}
+            ]
+          }
         ]
       }
     }
